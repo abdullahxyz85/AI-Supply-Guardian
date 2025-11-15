@@ -10,8 +10,10 @@ import {
   AlertTriangle,
   Package,
   Clock,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 type Page =
   | "dashboard"
@@ -27,6 +29,22 @@ interface DashboardProps {
 
 export function Dashboard({ onNavigateToLanding }: DashboardProps) {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    onNavigateToLanding();
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user?.user_metadata?.full_name) return "U";
+    const names = user.user_metadata.full_name.split(" ");
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
+  };
 
   return (
     <div className="min-h-screen bg-[#1a1f37] flex">
@@ -115,6 +133,14 @@ export function Dashboard({ onNavigateToLanding }: DashboardProps) {
             <Settings className="w-5 h-5" />
             <span className="font-medium">Settings</span>
           </button>
+
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-red-500/10 hover:text-red-400"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Sign Out</span>
+          </button>
         </nav>
       </aside>
 
@@ -143,9 +169,19 @@ export function Dashboard({ onNavigateToLanding }: DashboardProps) {
                 {currentPage === "settings" && "Configure your preferences"}
               </p>
             </div>
-            <button className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-              <span className="text-indigo-400 font-semibold">JD</span>
-            </button>
+            <div className="flex items-center space-x-3">
+              <div className="text-right hidden md:block">
+                <p className="text-sm font-medium text-white">
+                  {user?.user_metadata?.full_name || "User"}
+                </p>
+                <p className="text-xs text-gray-400">{user?.email}</p>
+              </div>
+              <button className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 hover:bg-indigo-500/20 transition">
+                <span className="text-indigo-400 font-semibold">
+                  {getUserInitials()}
+                </span>
+              </button>
+            </div>
           </div>
         </header>
 

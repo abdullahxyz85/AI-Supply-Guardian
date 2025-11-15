@@ -12,6 +12,8 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { AuthModal } from "./Auth/AuthModal";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LandingPageProps {
   onNavigateToDashboard: () => void;
@@ -19,6 +21,24 @@ interface LandingPageProps {
 
 export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const { user } = useAuth();
+
+  const handleSignIn = () => {
+    setAuthMode("signin");
+    setAuthModalOpen(true);
+  };
+
+  const handleSignUp = () => {
+    setAuthMode("signup");
+    setAuthModalOpen(true);
+  };
+
+  const handleAuthSuccess = () => {
+    setAuthModalOpen(false);
+    onNavigateToDashboard();
+  };
 
   // Toggle this to test PNG background vs animated starfield
   const usePngBackground = true; // Set to false to use animated starfield
@@ -106,18 +126,29 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               </nav>
 
               <div className="hidden md:flex items-center space-x-4">
-                <button
-                  onClick={onNavigateToDashboard}
-                  className="text-gray-300 hover:text-white transition"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={onNavigateToDashboard}
-                  className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
-                >
-                  Get Started
-                </button>
+                {user ? (
+                  <button
+                    onClick={onNavigateToDashboard}
+                    className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
+                  >
+                    Dashboard
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSignIn}
+                      className="text-gray-300 hover:text-white transition"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={handleSignUp}
+                      className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
+                    >
+                      Get Started
+                    </button>
+                  </>
+                )}
               </div>
 
               <button
@@ -160,22 +191,40 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 >
                   Contact
                 </a>
-                <button
-                  onClick={onNavigateToDashboard}
-                  className="block w-full text-left text-gray-300 hover:text-white"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={onNavigateToDashboard}
-                  className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30"
-                >
-                  Get Started
-                </button>
+                {user ? (
+                  <button
+                    onClick={onNavigateToDashboard}
+                    className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30"
+                  >
+                    Dashboard
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSignIn}
+                      className="block w-full text-left text-gray-300 hover:text-white"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={handleSignUp}
+                      className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30"
+                    >
+                      Get Started
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
         </header>
+
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          initialMode={authMode}
+          onSuccess={handleAuthSuccess}
+        />
 
         <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
@@ -196,10 +245,12 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
-                    onClick={onNavigateToDashboard}
+                    onClick={user ? onNavigateToDashboard : handleSignUp}
                     className="gradient-button text-white px-8 py-4 rounded-lg transition text-lg font-medium flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
                   >
-                    <span>Start Your Supply Journey</span>
+                    <span>
+                      {user ? "Go to Dashboard" : "Start Your Supply Journey"}
+                    </span>
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>
