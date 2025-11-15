@@ -20,34 +20,55 @@ interface LandingPageProps {
 export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Toggle this to test PNG background vs animated starfield
+  const usePngBackground = true; // Set to false to use animated starfield
+
   return (
     <div className="min-h-screen bg-[#0a0e1a] relative overflow-hidden">
-      {/* Animated Background with Stars */}
-      <div className="fixed inset-0 z-0">
-        {/* Nebula/Galaxy Background Effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a] via-[#1a1f37] to-[#0f1629]"></div>
+      {/* Animated Background with Stars (Original) */}
+      {!usePngBackground && (
+        <div className="fixed inset-0 z-0">
+          {/* Nebula/Galaxy Background Effect */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a] via-[#1a1f37] to-[#0f1629]"></div>
 
-        {/* Animated Gradient Clouds */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute top-40 right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-float-delay-1"></div>
-          <div className="absolute bottom-40 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float-delay-2"></div>
-          <div className="absolute bottom-20 right-1/3 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl animate-float-delay-3"></div>
+          {/* Animated Gradient Clouds */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute top-40 right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-float-delay-1"></div>
+            <div className="absolute bottom-40 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float-delay-2"></div>
+            <div className="absolute bottom-20 right-1/3 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl animate-float-delay-3"></div>
+          </div>
+
+          {/* Stars Layer 1 - Small Stars */}
+          <div className="stars-small"></div>
+
+          {/* Stars Layer 2 - Medium Stars */}
+          <div className="stars-medium"></div>
+
+          {/* Stars Layer 3 - Large Stars */}
+          <div className="stars-large"></div>
         </div>
+      )}
 
-        {/* Stars Layer 1 - Small Stars */}
-        <div className="stars-small"></div>
-
-        {/* Stars Layer 2 - Medium Stars */}
-        <div className="stars-medium"></div>
-
-        {/* Stars Layer 3 - Large Stars */}
-        <div className="stars-large"></div>
-      </div>
+      {/* PNG Background Image (Test) */}
+      {usePngBackground && (
+        <div className="fixed inset-0 z-0">
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage:
+                'url("https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=2013&auto=format&fit=crop")',
+              opacity: 0.6,
+            }}
+          ></div>
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a]/70 via-[#1a1f37]/80 to-[#0f1629]/70"></div>
+        </div>
+      )}
 
       {/* Content Wrapper with higher z-index */}
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 bg-[#1a1f37]/80 backdrop-blur-md border-b border-gray-800/50 z-50">
+        <header className="fixed top-0 left-0 right-0 bg-[#0a0e1a]/60 backdrop-blur-xl border-b border-indigo-500/20 z-50 shadow-lg shadow-indigo-500/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-2">
@@ -113,7 +134,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           </div>
 
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-800/50 bg-[#1a1f37]">
+            <div className="md:hidden border-t border-indigo-500/20 bg-[#0a0e1a]/60 backdrop-blur-xl">
               <div className="px-4 py-4 space-y-3">
                 <a
                   href="#features"
@@ -784,127 +805,55 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
         <footer
           id="contact"
-          className="bg-[#0a0e1a]/80 backdrop-blur-md text-gray-400 py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800/50"
+          className="bg-transparent text-gray-400 py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800/50"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Shield className="w-6 h-6 text-indigo-400" />
-                  <span className="text-lg font-semibold text-white">
-                    AI Supply Guardian
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Protecting SMEs from supply chain disruptions with intelligent
-                  AI monitoring.
-                </p>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center space-x-3 text-gray-400">
+                <span className="text-sm">
+                  ❤️ Built for AI Genesis Hackathon
+                </span>
               </div>
 
-              <div>
-                <h3 className="text-white font-semibold mb-4">Product</h3>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <a href="#features" className="hover:text-white transition">
-                      Features
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Pricing
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Demo
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Documentation
-                    </a>
-                  </li>
-                </ul>
+              <div className="flex items-center space-x-2">
+                <Shield className="w-6 h-6 text-indigo-400" />
+                <span className="text-lg font-semibold text-white">
+                  AI Supply Guardian
+                </span>
               </div>
 
-              <div>
-                <h3 className="text-white font-semibold mb-4">Company</h3>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      About Us
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Blog
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Careers
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Contact
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-white font-semibold mb-4">Legal</h3>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Privacy Policy
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Terms of Service
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:text-white transition">
-                      Cookie Policy
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-800/50 pt-8 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-gray-500">
-                © 2025 AI Supply Guardian. All rights reserved.
-              </p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
+              <div className="flex items-center space-x-6">
                 <a
-                  href="#"
-                  className="text-gray-500 hover:text-white transition"
+                  href="https://github.com/abdullahxyz85/AI-Supply-Guardian"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition flex items-center space-x-2"
                 >
-                  <span className="sr-only">Twitter</span>
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                    <path
+                      fillRule="evenodd"
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                      clipRule="evenodd"
+                    />
                   </svg>
+                  <span className="text-sm">GitHub</span>
                 </a>
                 <a
                   href="#"
-                  className="text-gray-500 hover:text-white transition"
+                  className="text-gray-400 hover:text-white transition flex items-center space-x-2"
                 >
-                  <span className="sr-only">LinkedIn</span>
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
+                  <span className="text-sm">Docs</span>
                 </a>
               </div>
             </div>
