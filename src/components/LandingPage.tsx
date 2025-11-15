@@ -737,67 +737,106 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           id="why-choose"
           className="py-20 bg-transparent px-4 sm:px-6 lg:px-8"
         >
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-4">
                 Why Choose AI Supply Guardian
               </h2>
               <p className="text-xl text-gray-400">
-                Built specifically for small and medium enterprises
+                Our vision for AI Supply Guardian's features and capabilities
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center group cursor-pointer">
-                <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/40 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-indigo-500/30">
-                  <CheckCircle className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors duration-300" />
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">
-                  No ERP Needed
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  Lightweight solution that works independently without complex
-                  integrations.
-                </p>
-              </div>
+            {/* Timeline Container */}
+            <div className="relative">
+              {/* Vertical Line */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-blue-500 via-purple-500 via-green-500 to-orange-500"></div>
 
-              <div className="text-center group cursor-pointer">
-                <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/40 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-indigo-500/30">
-                  <TrendingUp className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors duration-300" />
+              {/* Timeline Items */}
+              <div className="space-y-3">
+                {/* Item 1 - No ERP Needed (Blue) */}
+                <div className="relative flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
+                      <div className="inline-block px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-3">
+                        PHASE 1
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3">
+                        No ERP Needed
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        Lightweight solution that works independently without
+                        complex integrations, making it perfect for SMEs.
+                      </p>
+                    </div>
+                  </div>
+                  {/* Center Dot */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
+                  <div className="w-1/2"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">
-                  Accurate AI Detection
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  Advanced algorithms identify risks with high precision and
-                  minimal false positives.
-                </p>
-              </div>
 
-              <div className="text-center group cursor-pointer">
-                <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/40 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-indigo-500/30">
-                  <Clock className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors duration-300" />
+                {/* Item 2 - Accurate AI Detection (Purple) */}
+                <div className="relative flex items-center">
+                  <div className="w-1/2"></div>
+                  {/* Center Dot */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-purple-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
+                  <div className="w-1/2 pl-12">
+                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+                      <div className="inline-block px-3 py-1 bg-purple-500/20 rounded-full text-purple-400 text-xs font-semibold mb-3">
+                        PHASE 2
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3">
+                        Accurate AI Detection
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        Advanced algorithms identify risks with high precision
+                        and minimal false positives, ensuring reliable alerts.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">
-                  Saves Time & Money
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  Prevent costly delays and make better purchasing decisions
-                  with early warnings.
-                </p>
-              </div>
 
-              <div className="text-center group cursor-pointer">
-                <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/40 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-indigo-500/30">
-                  <Shield className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors duration-300" />
+                {/* Item 3 - Saves Time & Money (Green) */}
+                <div className="relative flex items-center">
+                  <div className="w-1/2 pr-12 text-right">
+                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20">
+                      <div className="inline-block px-3 py-1 bg-green-500/20 rounded-full text-green-400 text-xs font-semibold mb-3">
+                        PHASE 3
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3">
+                        Saves Time & Money
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        Prevent costly delays and make better purchasing
+                        decisions with early warnings and predictive analytics.
+                      </p>
+                    </div>
+                  </div>
+                  {/* Center Dot */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
+                  <div className="w-1/2"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-indigo-300 transition-colors duration-300">
-                  Built for SMEs
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  Affordable, easy to use, and designed for businesses without
-                  dedicated supply chain teams.
-                </p>
+
+                {/* Item 4 - Built for SMEs (Orange) */}
+                <div className="relative flex items-center">
+                  <div className="w-1/2"></div>
+                  {/* Center Dot */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
+                  <div className="w-1/2 pl-12">
+                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
+                      <div className="inline-block px-3 py-1 bg-orange-500/20 rounded-full text-orange-400 text-xs font-semibold mb-3">
+                        PHASE 4
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3">
+                        Built for SMEs
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        Affordable, easy to use, and designed for businesses
+                        without dedicated supply chain teams.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
