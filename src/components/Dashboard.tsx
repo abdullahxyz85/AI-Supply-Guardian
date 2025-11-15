@@ -11,6 +11,7 @@ import {
   Package,
   Clock,
   LogOut,
+  Home,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
@@ -134,13 +135,23 @@ export function Dashboard({ onNavigateToLanding }: DashboardProps) {
             <span className="font-medium">Settings</span>
           </button>
 
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-red-500/10 hover:text-red-400"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Sign Out</span>
-          </button>
+          <div className="pt-4 mt-4 border-t border-gray-800/50 space-y-2">
+            <button
+              onClick={onNavigateToLanding}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-[#1a1f37] hover:text-white"
+            >
+              <Home className="w-5 h-5" />
+              <span className="font-medium">Back to Home</span>
+            </button>
+
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-red-500/10 hover:text-red-400"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium">Sign Out</span>
+            </button>
+          </div>
         </nav>
       </aside>
 

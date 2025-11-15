@@ -10,8 +10,9 @@ import {
   ArrowRight,
   Menu,
   X,
+  ChevronUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthModal } from "./Auth/AuthModal";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -23,7 +24,25 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const { user } = useAuth();
+
+  // Show scroll-to-top button when user scrolls down
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const handleSignIn = () => {
     setAuthMode("signin");
@@ -137,15 +156,16 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                   <>
                     <button
                       onClick={handleSignIn}
-                      className="text-gray-300 hover:text-white transition"
+                      className="text-gray-300 hover:text-white transition font-medium"
                     >
-                      Sign In
+                      Login
                     </button>
+                    <span className="text-gray-500">/</span>
                     <button
                       onClick={handleSignUp}
-                      className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
+                      className="text-gray-300 hover:text-white transition font-medium"
                     >
-                      Get Started
+                      Sign Up
                     </button>
                   </>
                 )}
@@ -185,12 +205,12 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 >
                   Why Choose Us
                 </a>
-                <a
+                {/* <a
                   href="#contact"
                   className="block text-gray-300 hover:text-white"
                 >
                   Contact
-                </a>
+                </a> */}
                 {user ? (
                   <button
                     onClick={onNavigateToDashboard}
@@ -199,20 +219,23 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                     Dashboard
                   </button>
                 ) : (
-                  <>
-                    <button
-                      onClick={handleSignIn}
-                      className="block w-full text-left text-gray-300 hover:text-white"
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={handleSignUp}
-                      className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30"
-                    >
-                      Get Started
-                    </button>
-                  </>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center space-x-2">
+                      <button
+                        onClick={handleSignIn}
+                        className="text-gray-300 hover:text-white font-medium"
+                      >
+                        Login
+                      </button>
+                      <span className="text-gray-500">/</span>
+                      <button
+                        onClick={handleSignUp}
+                        className="text-gray-300 hover:text-white font-medium"
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -950,6 +973,17 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           </div>
         </footer>
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-12 h-12 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg shadow-indigo-500/50 flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+          aria-label="Scroll to top"
+        >
+          <ChevronUp className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 }
