@@ -95,8 +95,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage:
-                'url("https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=2013&auto=format&fit=crop")',
+              backgroundImage: 'url("/background3.jpeg")',
               opacity: 0.6,
             }}
           ></div>
@@ -107,7 +106,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
       {/* Content Wrapper with higher z-index */}
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 bg-[#0a0e1a]/60 backdrop-blur-xl border-b border-indigo-500/20 z-50 shadow-lg shadow-indigo-500/5">
+        <header className="fixed top-0 left-0 right-0 border-b border-indigo-500/20 z-50 shadow-lg shadow-indigo-500/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-2">
@@ -205,12 +204,12 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 >
                   Why Choose Us
                 </a>
-                {/* <a
+                <a
                   href="#contact"
                   className="block text-gray-300 hover:text-white"
                 >
                   Contact
-                </a> */}
+                </a>
                 {user ? (
                   <button
                     onClick={onNavigateToDashboard}
