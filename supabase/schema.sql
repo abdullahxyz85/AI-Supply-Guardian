@@ -344,6 +344,44 @@ CREATE TRIGGER update_google_oauth_tokens_updated_at BEFORE UPDATE ON google_oau
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
+-- 9. AI ANALYSIS RESULTS TABLE
+-- Store AI-extracted email analysis with structured data
+-- =====================================================
+CREATE TABLE ai_analysis_results (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email_id UUID REFERENCES emails(id) ON DELETE CASCADE,
+    issue_type VARCHAR(100),
+    order_id VARCHAR(50),
+    item_name VARCHAR(255),
+    quantity INTEGER,
+    old_delivery_date DATE,
+    new_delivery_date DATE,
+    delay_days INTEGER,
+    cancellation_flag BOOLEAN DEFAULT false,
+    price_change DECIMAL(10, 2),
+    tracking_number VARCHAR(100),
+    risk_level VARCHAR(50),
+    reason TEXT,
+    recommendation TEXT,
+    confidence DECIMAL(3, 2),
+    additional_notes TEXT,
+    raw_output JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for better query performance
+CREATE INDEX idx_ai_analysis_email_id ON ai_analysis_results(email_id);
+CREATE INDEX idx_ai_analysis_order_id ON ai_analysis_results(order_id);
+CREATE INDEX idx_ai_analysis_risk_level ON ai_analysis_results(risk_level);
+CREATE INDEX idx_ai_analysis_issue_type ON ai_analysis_results(issue_type);
+CREATE INDEX idx_ai_analysis_created_at ON ai_analysis_results(created_at DESC);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_ai_analysis_results_updated_at BEFORE UPDATE ON ai_analysis_results
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
 -- REALTIME PUBLICATIONS
 -- Enable real-time subscriptions for all tables
 -- =====================================================
@@ -360,7 +398,8 @@ CREATE PUBLICATION supabase_realtime FOR TABLE
     extracted_data,
     risk_analysis,
     audit_log,
-    google_oauth_tokens;
+    google_oauth_tokens,
+    ai_analysis_results;
 
 -- =====================================================
 -- SAMPLE DATA (Optional - for testing)

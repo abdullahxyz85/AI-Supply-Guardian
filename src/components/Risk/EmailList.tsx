@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Mail,
   Clock,
@@ -8,106 +8,98 @@ import {
   Search,
   Plus,
   FileText,
+  TrendingUp,
+  Package,
+  Calendar,
 } from "lucide-react";
+import { supabase } from "../../lib/supabase";
 
 export function EmailList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [aiAnalysisResults, setAiAnalysisResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Placeholder data - will be replaced with real data from AI agent
-  const placeholderEmails = [
-    {
-      id: "1",
-      subject: "Delivery Update - Steel Sheets Order #12345",
-      supplier: "Acme Corp",
-      received_date: "2025-11-17T10:30:00Z",
-      status: "processed",
-      extracted: true,
-      risk_detected: true,
-    },
-    {
-      id: "2",
-      subject: "Re: Copper Wire Price Update",
-      supplier: "Global Materials",
-      received_date: "2025-11-16T14:15:00Z",
-      status: "processed",
-      extracted: true,
-      risk_detected: false,
-    },
-    {
-      id: "3",
-      subject: "Order Confirmation PO-2025-089",
-      supplier: "TechParts Ltd",
-      received_date: "2025-11-15T09:45:00Z",
-      status: "pending",
-      extracted: false,
-      risk_detected: false,
-    },
-  ];
+  // Fetch AI analysis results from Supabase
+  useEffect(() => {
+    fetchAiAnalysisResults();
+  }, []);
 
-  // Filter emails
-  const filteredEmails = placeholderEmails.filter((email) => {
+  const fetchAiAnalysisResults = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("ai_analysis_results")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setAiAnalysisResults(data || []);
+    } catch (error) {
+      console.error("Error fetching AI analysis results:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter analysis results
+  const filteredResults = aiAnalysisResults.filter((result) => {
     const matchesSearch =
-      email.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      email.supplier.toLowerCase().includes(searchTerm.toLowerCase());
+      result.issue_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      result.order_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      result.item_name?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" ||
-      (statusFilter === "processed" && email.status === "processed") ||
-      (statusFilter === "pending" && email.status === "pending") ||
-      (statusFilter === "risk" && email.risk_detected);
+      (statusFilter === "high" && result.risk_level === "High") ||
+      (statusFilter === "medium" && result.risk_level === "Medium") ||
+      (statusFilter === "low" && result.risk_level === "Low");
 
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusInfo = (
-    status: string,
-    extracted: boolean,
-    riskDetected: boolean
-  ) => {
-    if (riskDetected) {
-      return {
-        color: "text-red-400",
-        bg: "bg-red-500/10",
-        border: "border-red-500/30",
-        icon: AlertCircle,
-        label: "Risk Detected",
-      };
+  const getRiskColor = (riskLevel: string) => {
+    switch (riskLevel?.toLowerCase()) {
+      case "high":
+        return {
+          color: "text-red-400",
+          bg: "bg-red-500/10",
+          border: "border-red-500/30",
+          icon: AlertCircle,
+        };
+      case "medium":
+        return {
+          color: "text-yellow-400",
+          bg: "bg-yellow-500/10",
+          border: "border-yellow-500/30",
+          icon: TrendingUp,
+        };
+      case "low":
+        return {
+          color: "text-green-400",
+          bg: "bg-green-500/10",
+          border: "border-green-500/30",
+          icon: CheckCircle2,
+        };
+      default:
+        return {
+          color: "text-gray-400",
+          bg: "bg-gray-500/10",
+          border: "border-gray-500/30",
+          icon: Mail,
+        };
     }
-    if (status === "processed" && extracted) {
-      return {
-        color: "text-green-400",
-        bg: "bg-green-500/10",
-        border: "border-green-500/30",
-        icon: CheckCircle2,
-        label: "Processed",
-      };
-    }
-    if (status === "pending") {
-      return {
-        color: "text-yellow-400",
-        bg: "bg-yellow-500/10",
-        border: "border-yellow-500/30",
-        icon: Loader2,
-        label: "Pending",
-      };
-    }
-    return {
-      color: "text-gray-400",
-      bg: "bg-gray-500/10",
-      border: "border-gray-500/30",
-      icon: Mail,
-      label: "Unknown",
-    };
   };
 
-  const processedCount = placeholderEmails.filter(
-    (e) => e.status === "processed"
+  const highRiskCount = aiAnalysisResults.filter(
+    (r) => r.risk_level === "High"
   ).length;
-  const pendingCount = placeholderEmails.filter(
-    (e) => e.status === "pending"
+  const mediumRiskCount = aiAnalysisResults.filter(
+    (r) => r.risk_level === "Medium"
   ).length;
-  const riskCount = placeholderEmails.filter((e) => e.risk_detected).length;
+  const lowRiskCount = aiAnalysisResults.filter(
+    (r) => r.risk_level === "Low"
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -176,16 +168,16 @@ export function EmailList() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-elevated border border-green-500/30 rounded-xl p-6">
+        <div className="bg-elevated border border-red-500/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Processed</p>
-              <p className="text-3xl font-bold text-green-400 mt-1">
-                {processedCount}
+              <p className="text-gray-400 text-sm">High Risk</p>
+              <p className="text-3xl font-bold text-red-400 mt-1">
+                {highRiskCount}
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-6 h-6 text-green-400" />
+            <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center">
+              <AlertCircle className="w-6 h-6 text-red-400" />
             </div>
           </div>
         </div>
@@ -193,27 +185,27 @@ export function EmailList() {
         <div className="bg-elevated border border-yellow-500/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Pending Processing</p>
+              <p className="text-gray-400 text-sm">Medium Risk</p>
               <p className="text-3xl font-bold text-yellow-400 mt-1">
-                {pendingCount}
+                {mediumRiskCount}
               </p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-              <Loader2 className="w-6 h-6 text-yellow-400" />
+              <TrendingUp className="w-6 h-6 text-yellow-400" />
             </div>
           </div>
         </div>
 
-        <div className="bg-elevated border border-red-500/30 rounded-xl p-6">
+        <div className="bg-elevated border border-green-500/30 rounded-xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Risks Detected</p>
-              <p className="text-3xl font-bold text-red-400 mt-1">
-                {riskCount}
+              <p className="text-gray-400 text-sm">Low Risk</p>
+              <p className="text-3xl font-bold text-green-400 mt-1">
+                {lowRiskCount}
               </p>
             </div>
-            <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center">
-              <AlertCircle className="w-6 h-6 text-red-400" />
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-green-400" />
             </div>
           </div>
         </div>
@@ -239,104 +231,188 @@ export function EmailList() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-3 bg-elevated border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white"
         >
-          <option value="all">All Emails</option>
-          <option value="processed">Processed</option>
-          <option value="pending">Pending</option>
-          <option value="risk">Risk Detected</option>
+          <option value="all">All Risk Levels</option>
+          <option value="high">High Risk</option>
+          <option value="medium">Medium Risk</option>
+          <option value="low">Low Risk</option>
         </select>
       </div>
 
-      {/* Email List */}
-      {filteredEmails.length === 0 ? (
+      {/* AI Analysis Results List */}
+      {loading ? (
+        <div className="text-center py-12">
+          <Loader2 className="w-16 h-16 text-primary mx-auto mb-4 animate-spin" />
+          <h3 className="text-xl font-semibold text-gray-400 mb-2">
+            Loading AI Analysis Results...
+          </h3>
+        </div>
+      ) : filteredResults.length === 0 ? (
         <div className="text-center py-12">
           <Mail className="w-16 h-16 text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-400 mb-2">
             {searchTerm || statusFilter !== "all"
-              ? "No emails found"
-              : "No emails yet"}
+              ? "No results found"
+              : "No AI analysis results yet"}
           </h3>
           <p className="text-gray-500 mb-6">
             {searchTerm || statusFilter !== "all"
               ? "Try adjusting your filters"
-              : "Emails will appear here once the AI agent is integrated"}
+              : "AI analysis results will appear here once processed"}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filteredEmails.map((email) => {
-            const statusInfo = getStatusInfo(
-              email.status,
-              email.extracted,
-              email.risk_detected
-            );
-            const StatusIcon = statusInfo.icon;
+        <div className="space-y-4">
+          {filteredResults.map((result) => {
+            const riskInfo = getRiskColor(result.risk_level);
+            const RiskIcon = riskInfo.icon;
 
             return (
               <div
-                key={email.id}
-                className={`bg-elevated rounded-lg p-6 border-l-4 ${statusInfo.border} hover:shadow-lg transition-all duration-200`}
+                key={result.id}
+                className={`bg-elevated rounded-lg p-6 border-l-4 ${riskInfo.border} hover:shadow-lg transition-all duration-200`}
               >
-                <div className="flex items-start justify-between">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-4 flex-1">
                     <div
-                      className={`w-12 h-12 ${statusInfo.bg} rounded-lg flex items-center justify-center flex-shrink-0`}
+                      className={`w-12 h-12 ${riskInfo.bg} rounded-lg flex items-center justify-center flex-shrink-0`}
                     >
-                      <StatusIcon
-                        className={`w-6 h-6 ${statusInfo.color} ${
-                          email.status === "pending" ? "animate-spin" : ""
-                        }`}
-                      />
+                      <RiskIcon className={`w-6 h-6 ${riskInfo.color}`} />
                     </div>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.bg} ${statusInfo.color} border ${statusInfo.border}`}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${riskInfo.bg} ${riskInfo.color} border ${riskInfo.border}`}
                         >
-                          {statusInfo.label}
+                          {result.risk_level} Risk
                         </span>
-                        {email.extracted && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30">
-                            Data Extracted
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                          {result.issue_type}
+                        </span>
+                        {result.confidence && (
+                          <span className="text-xs text-gray-400">
+                            Confidence: {(result.confidence * 100).toFixed(0)}%
                           </span>
                         )}
                       </div>
 
                       <h3 className="text-lg font-semibold text-white mb-2">
-                        {email.subject}
+                        Order: {result.order_id}
                       </h3>
+                    </div>
+                  </div>
+                </div>
 
-                      <div className="flex items-center space-x-4 text-sm text-gray-400">
-                        <span>
-                          From:{" "}
-                          <span className="text-gray-300">
-                            {email.supplier}
-                          </span>
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {new Date(email.received_date).toLocaleString()}
-                        </span>
-                      </div>
-
-                      {email.status === "pending" && (
-                        <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
-                          <p className="text-xs text-yellow-300">
-                            ⏳ Waiting for AI processing... Data extraction and
-                            risk analysis will happen automatically.
-                          </p>
-                        </div>
-                      )}
-
-                      {email.risk_detected && (
-                        <div className="mt-3 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-                          <p className="text-xs text-red-300">
-                            ⚠️ Risk detected by AI. Check the Risk Analysis
-                            dashboard for details.
-                          </p>
-                        </div>
+                {/* Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-start space-x-3">
+                    <Package className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-400">Item</p>
+                      <p className="text-sm text-white font-medium">
+                        {result.item_name}
+                      </p>
+                      {result.quantity && (
+                        <p className="text-xs text-gray-400">
+                          Qty: {result.quantity}
+                        </p>
                       )}
                     </div>
+                  </div>
+
+                  {result.delay_days && (
+                    <div className="flex items-start space-x-3">
+                      <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-gray-400">Delivery Impact</p>
+                        <p className="text-sm text-white font-medium">
+                          {result.delay_days} days delay
+                        </p>
+                        {result.old_delivery_date &&
+                          result.new_delivery_date && (
+                            <p className="text-xs text-gray-400">
+                              {new Date(
+                                result.old_delivery_date
+                              ).toLocaleDateString()}{" "}
+                              →{" "}
+                              {new Date(
+                                result.new_delivery_date
+                              ).toLocaleDateString()}
+                            </p>
+                          )}
+                      </div>
+                    </div>
+                  )}
+
+                  {result.price_change && (
+                    <div className="flex items-start space-x-3">
+                      <TrendingUp className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-gray-400">Price Change</p>
+                        <p className="text-sm text-white font-medium">
+                          ${result.price_change}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {result.tracking_number && (
+                    <div className="flex items-start space-x-3">
+                      <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-gray-400">Tracking</p>
+                        <p className="text-sm text-white font-medium">
+                          {result.tracking_number}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Reason */}
+                {result.reason && (
+                  <div className="bg-darker rounded-lg p-4 mb-4">
+                    <p className="text-xs text-gray-400 mb-1 font-semibold">
+                      Reason:
+                    </p>
+                    <p className="text-sm text-gray-300">{result.reason}</p>
+                  </div>
+                )}
+
+                {/* Recommendation */}
+                {result.recommendation && (
+                  <div
+                    className={`${riskInfo.bg} border ${riskInfo.border} rounded-lg p-4 mb-4`}
+                  >
+                    <p
+                      className={`text-xs ${riskInfo.color} mb-1 font-semibold`}
+                    >
+                      🤖 AI Recommendation:
+                    </p>
+                    <p className="text-sm text-gray-300">
+                      {result.recommendation}
+                    </p>
+                  </div>
+                )}
+
+                {/* Additional Notes */}
+                {result.additional_notes && (
+                  <div className="bg-darker rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">
+                      Additional Notes:
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {result.additional_notes}
+                    </p>
+                  </div>
+                )}
+
+                {/* Timestamp */}
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="flex items-center text-xs text-gray-400">
+                    <Clock className="w-3 h-3 mr-1" />
+                    Analyzed on {new Date(result.created_at).toLocaleString()}
                   </div>
                 </div>
               </div>
