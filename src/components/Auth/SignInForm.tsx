@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Mail, Lock, AlertCircle, Loader2, Sparkles } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  AlertCircle,
+  Loader2,
+  Sparkles,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
 interface SignInFormProps {
@@ -11,6 +19,7 @@ export function SignInForm({ onSwitchToSignUp, onSuccess }: SignInFormProps) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +49,7 @@ export function SignInForm({ onSwitchToSignUp, onSuccess }: SignInFormProps) {
     <div className="w-full max-w-md animate-fade-in">
       {/* Header with gradient accent */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-indigo-500/50 animate-pulse-slow">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-2xl mb-4 shadow-lg shadow-primary/50 animate-pulse-slow">
           <Sparkles className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
@@ -71,11 +80,11 @@ export function SignInForm({ onSwitchToSignUp, onSuccess }: SignInFormProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-gradient-to-br from-[#1a1f37] to-[#151929] border-2 border-gray-700/50 rounded-xl focus:ring-4 focus:ring-indigo-500/30 focus:border-indigo-500 hover:border-gray-600 transition-all duration-300 text-white placeholder-gray-500 shadow-lg hover:shadow-xl hover:shadow-indigo-500/10 focus:shadow-indigo-500/30"
+              className="w-full pl-12 pr-4 py-4 bg-gradient-to-br from-bg-darker to-bg-darker border-2 border-gray-700/50 rounded-xl focus:ring-4 focus:ring-primary/30 focus:border-primary hover:border-gray-600 transition-all duration-300 text-white placeholder-gray-500 shadow-lg hover:shadow-xl hover:shadow-primary/10 focus:shadow-primary/30"
               placeholder="you@example.com"
               disabled={loading}
             />
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none"></div>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/0 to-primary/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none"></div>
           </div>
         </div>
 
@@ -87,14 +96,26 @@ export function SignInForm({ onSwitchToSignUp, onSuccess }: SignInFormProps) {
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-hover:text-indigo-400 transition-colors duration-200 z-10" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-gradient-to-br from-[#1a1f37] to-[#151929] border-2 border-gray-700/50 rounded-xl focus:ring-4 focus:ring-indigo-500/30 focus:border-indigo-500 hover:border-gray-600 transition-all duration-300 text-white placeholder-gray-500 shadow-lg hover:shadow-xl hover:shadow-indigo-500/10 focus:shadow-indigo-500/30"
+              className="w-full pl-12 pr-12 py-4 bg-gradient-to-br from-bg-darker to-bg-darker border-2 border-gray-700/50 rounded-xl focus:ring-4 focus:ring-primary/30 focus:border-primary hover:border-gray-600 transition-all duration-300 text-white placeholder-gray-500 shadow-lg hover:shadow-xl hover:shadow-primary/10 focus:shadow-primary/30"
               placeholder="Enter your password"
               disabled={loading}
             />
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none"></div>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-indigo-400 transition-colors duration-200 z-10"
+              disabled={loading}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/0 to-primary/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none"></div>
           </div>
         </div>
 
@@ -102,7 +123,7 @@ export function SignInForm({ onSwitchToSignUp, onSuccess }: SignInFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full relative group/btn overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 text-white px-6 py-4 rounded-xl transition-all duration-300 font-semibold text-lg shadow-xl shadow-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/60 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-[0.98] mt-8"
+          className="w-full relative group/btn overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 text-white px-6 py-4 rounded-xl transition-all duration-300 font-semibold text-lg shadow-xl shadow-primary/50 hover:shadow-2xl hover:shadow-primary/60 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-[0.98] mt-8"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
           <div className="relative flex items-center justify-center space-x-2">
