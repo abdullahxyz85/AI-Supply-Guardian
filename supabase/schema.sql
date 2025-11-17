@@ -316,6 +316,34 @@ CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
+-- 8. GOOGLE OAUTH TOKENS TABLE
+-- Store Google OAuth tokens for Gmail/Calendar integration
+-- =====================================================
+CREATE TABLE google_oauth_tokens (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id TEXT NOT NULL UNIQUE, -- Google user ID
+    auth_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- Link to Supabase auth user
+    name VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    picture TEXT,
+    access_token TEXT NOT NULL,
+    refresh_token TEXT NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    scopes TEXT[], -- Array of OAuth scopes
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Index for faster queries
+CREATE INDEX idx_google_oauth_user_id ON google_oauth_tokens(user_id);
+CREATE INDEX idx_google_oauth_email ON google_oauth_tokens(email);
+CREATE INDEX idx_google_oauth_auth_user_id ON google_oauth_tokens(auth_user_id);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_google_oauth_tokens_updated_at BEFORE UPDATE ON google_oauth_tokens
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
 -- REALTIME PUBLICATIONS
 -- Enable real-time subscriptions for all tables
 -- =====================================================
@@ -331,7 +359,8 @@ CREATE PUBLICATION supabase_realtime FOR TABLE
     emails,
     extracted_data,
     risk_analysis,
-    audit_log;
+    audit_log,
+    google_oauth_tokens;
 
 -- =====================================================
 -- SAMPLE DATA (Optional - for testing)
