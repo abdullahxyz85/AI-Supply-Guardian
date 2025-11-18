@@ -61,9 +61,9 @@ We designed our entire agent system using Opus workflow builder. The platform he
 
 ## AI Agent Architecture
 
-Our intelligent system uses a multi-agent workflow orchestrated through **Opus AI**, powered by **Google Gemini API** for natural language processing.
+Our intelligent system uses a multi-agent workflow orchestrated through **Opus**, powered by **Google Gemini API** for natural language processing.
 
-### Opus AI Workflow Design
+### Opus Workflow Design
 
 <img width="1617" height="384" alt="Screenshot 2025-11-18 132109" src="https://github.com/user-attachments/assets/4d71aa08-dcb1-4598-abb3-d63aa8450a52" />
 
