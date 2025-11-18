@@ -75,8 +75,11 @@ app = FastAPI(title="Google OAuth2 Authentication API", version="1.0.0")
 
 # CORS configuration
 origins = [
-    "http://localhost:3032",
+    "http://localhost:3035",
+    "http://localhost:8055",
     "http://localhost:5173",
+    "http://ai-supply-guardian.zentraid.com",
+    "https://ai-supply-guardian.zentraid.com",
     os.getenv("FRONTEND_URL", "https://yourdomain.com"),
 ]
 
@@ -587,5 +590,5 @@ async def validate_session(user_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", "8050"))
+    port = int(os.getenv("PORT", "8055"))
     uvicorn.run(app, host="0.0.0.0", port=port)

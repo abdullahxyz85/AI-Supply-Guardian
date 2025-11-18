@@ -92,7 +92,7 @@ The `.htaccess` file has been created with the correct configuration. Just updat
 ```apache
 # In .htaccess, line 12-13:
 RewriteCond %{REQUEST_URI} ^/api/ [NC]
-RewriteRule ^api/(.*)$ http://localhost:8050/api/$1 [P,L]
+RewriteRule ^api/(.*)$ http://localhost:8055/api/$1 [P,L]
 ```
 
 #### **C. Set Up Domain in cPanel**
@@ -154,8 +154,8 @@ docker-compose down -v
 - **Frontend**: `https://your-domain.com`
 - **Backend API**: `https://your-domain.com/api/`
 - **Auth Callback**: `https://your-domain.com/api/auth/google/callback`
-- **Health Check (Backend)**: `http://localhost:8050/health`
-- **Health Check (Frontend)**: `http://localhost:3032/health`
+- **Health Check (Backend)**: `http://localhost:8055/health`
+- **Health Check (Frontend)**: `http://localhost:3035/health`
 
 ---
 
@@ -185,7 +185,7 @@ docker ps | grep backend
 docker-compose logs backend
 
 # Test backend directly
-curl http://localhost:8050/health
+curl http://localhost:8055/health
 ```
 
 ### Frontend Not Loading
@@ -198,7 +198,7 @@ docker-compose logs frontend
 docker-compose exec frontend cat /etc/nginx/conf.d/default.conf
 
 # Test frontend directly
-curl http://localhost:3032
+curl http://localhost:3035
 ```
 
 ### API Proxy Not Working
@@ -283,7 +283,7 @@ If you encounter issues:
 
 1. Check container logs: `docker-compose logs`
 2. Verify environment variables: `cat backend/.env`
-3. Test endpoints: `curl http://localhost:8050/health`
+3. Test endpoints: `curl http://localhost:8055/health`
 4. Contact hosting provider for Apache/proxy issues
 
 ---

@@ -98,7 +98,7 @@ docker-compose ps
 
 # Check backend health
 print_info "Testing backend health..."
-if curl -f http://localhost:8050/health &>/dev/null; then
+if curl -f http://localhost:8055/health &>/dev/null; then
     print_info "Backend is healthy ✓"
 else
     print_error "Backend health check failed"
@@ -108,7 +108,7 @@ fi
 
 # Check frontend health
 print_info "Testing frontend..."
-if curl -f http://localhost:3032/ &>/dev/null; then
+if curl -f http://localhost:3035/ &>/dev/null; then
     print_info "Frontend is running ✓"
 else
     print_warn "Frontend might still be starting up..."
@@ -122,8 +122,8 @@ echo ""
 echo "=========================================="
 print_info "Deployment complete! 🎉"
 echo ""
-echo "Frontend: http://localhost:3032"
-echo "Backend:  http://localhost:8050"
+echo "Frontend: http://localhost:3035"
+echo "Backend:  http://localhost:8055"
 echo ""
 print_info "To view logs: docker-compose logs -f"
 print_info "To stop: docker-compose down"

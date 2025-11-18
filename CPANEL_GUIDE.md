@@ -134,7 +134,7 @@ RewriteBase /
 
 # Proxy API requests to Docker backend
 RewriteCond %{REQUEST_URI} ^/api/ [NC]
-RewriteRule ^api/(.*)$ http://localhost:8050/api/$1 [P,L]
+RewriteRule ^api/(.*)$ http://localhost:8055/api/$1 [P,L]
 
 # React Router
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -218,14 +218,14 @@ firewall-cmd --reload
 ### 1. **Test Backend API**
 
 ```bash
-curl http://localhost:8050/health
+curl http://localhost:8055/health
 # Should return: {"status":"healthy"}
 ```
 
 ### 2. **Test Frontend**
 
 ```bash
-curl http://localhost:3032/
+curl http://localhost:3035/
 # Should return HTML content
 ```
 
@@ -260,13 +260,13 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-### **Issue 2: "Port 8050 already in use"**
+### **Issue 2: "Port 8055 already in use"**
 
 **Solution:**
 
 ```bash
 # Find process using port
-lsof -i :8050
+lsof -i :8055
 
 # Kill process
 kill -9 <PID>
@@ -311,7 +311,7 @@ Add to `backend/auth_backend.py`:
 origins = [
     "https://your-domain.com",
     "https://www.your-domain.com",
-    "http://localhost:3032",
+    "http://localhost:3035",
 ]
 ```
 
@@ -414,10 +414,10 @@ docker-compose up -d --build
 
 ```bash
 # Backend health
-curl -v http://localhost:8050/health
+curl -v http://localhost:8055/health
 
 # Frontend
-curl -v http://localhost:3032/
+curl -v http://localhost:3035/
 
 # API proxy
 curl -v https://your-domain.com/api/health
