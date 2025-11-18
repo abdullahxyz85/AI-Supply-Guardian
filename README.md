@@ -2,6 +2,9 @@
 
 A smart supply chain management system powered by AI agents that automatically processes supplier emails, detects risks, and provides actionable insights - so you can focus on what matters.
 
+<img width="1894" height="854" alt="Screenshot 2025-11-18 141329" src="https://github.com/user-attachments/assets/e6cfcbab-c708-4b9b-999c-657df54eb4ea" />
+
+
 ## ✨ What We Built
 
 Managing supplier communications is painful. Hundreds of emails about delays, price changes, and order updates - who can keep track?
