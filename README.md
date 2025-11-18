@@ -1,14 +1,14 @@
 # 🛡️ AI Supply Guardian
 
-Hey there! Welcome to AI Supply Guardian - a smart supply chain management system that actually makes sense of your supplier emails and helps you catch problems before they become disasters.
+A smart supply chain management system powered by AI agents that automatically processes supplier emails, detects risks, and provides actionable insights - so you can focus on what matters.
 
-## What's This All About?
+## ✨ What We Built
 
-Look, managing suppliers is tough. You get hundreds of emails about delays, price changes, and order updates. Who has time to read them all? That's where we come in.
+Managing supplier communications is painful. Hundreds of emails about delays, price changes, and order updates - who can keep track?
 
-AI Supply Guardian uses AI agents to automatically read your supplier emails, extract the important stuff, and flag potential issues. Think of it as having a super-attentive assistant who never sleeps and never misses a detail.
+**Our solution:** AI agents that read your supplier emails, extract critical information, and flag potential issues before they become disasters.
 
-## What Can It Do?
+## 🎯 Core Features
 
 - **Email Intelligence**: Connects to your Gmail and automatically processes supplier communications
 - **Smart Data Extraction**: AI agents pull out order details, delivery dates, prices, and tracking numbers
@@ -41,210 +41,167 @@ We designed our entire agent system using Opus workflow builder. The platform he
 
 **Our Opus Workflow Architecture:**
 
+- **🤖 AI Email Processing** - Automatically reads and understands supplier communications using Google Gemini API
+- **📊 Risk Detection** - Identifies delays, price changes, and quality issues with confidence scores
+- **📦 Inventory Management** - Track stock levels with intelligent alerts
+- **🚚 Order Tracking** - Monitor all orders and their status in real-time
+- **👥 Supplier Analytics** - Performance tracking and reliability scoring
+- **🎨 Dual Themes** - Switch between Purple and ArcFi-Orange dark themes
+
+## 🏗️ Tech Stack
+
+- **Frontend:** React + TypeScript + Vite + Tailwind CSS
+- **Backend:** Python + Supabase (PostgreSQL)
+- **Authentication:** Firebase + Google OAuth
+- **AI Orchestration:** Opus AI Workflows _(Hackathon Requirement)_
+- **LLM:** Google Gemini API _(Hackathon Requirement)_
+- **Automation:** n8n Workflows
+
+---
+
+## 🤖 AI Agent Architecture
+
+Our intelligent system uses a multi-agent workflow orchestrated through **Opus AI**, powered by **Google Gemini API** for natural language processing.
+
+### 📋 Opus AI Workflow Design
+
 <img width="1617" height="384" alt="Screenshot 2025-11-18 132109" src="https://github.com/user-attachments/assets/4d71aa08-dcb1-4598-abb3-d63aa8450a52" />
 
-The workflow handles:
+```mermaid
+graph LR
+    A[📧 Workflow Input<br/>Gmail Integration] --> B[🔍 Extract Risk Events<br/>Gemini API]
+    B --> C[⚖️ Review & Analyze<br/>Validation Agent]
+    C --> D[📊 Analyze Supplier<br/>Performance]
+    D --> E[💡 Generate<br/>Recommendations]
+    E --> F[🔔 Notify Stakeholders]
+    E --> G[💾 Update Database<br/>Supabase]
 
-1. **Workflow Input** → Receives supplier emails
-2. **Extract Risk Events** → AI agent extracts key information from emails
-3. **Review & Analyze** → Validates and processes extracted data
-4. **Supplier Performance Analysis** → Evaluates supplier reliability
-5. **Generate Recommendations** → Creates actionable insights
-6. **Dual Output Streams**:
-   - Notifies stakeholders of critical issues
-   - Updates operational database with insights
+    style A fill:#4CAF50
+    style B fill:#2196F3
+    style C fill:#FF9800
+    style D fill:#9C27B0
+    style E fill:#F44336
+    style F fill:#00BCD4
+    style G fill:#795548
+```
 
-### 🤖 Google Gemini API Integration
+### 🔄 Agent Flow Breakdown
 
-We're using Google's Gemini API as our primary LLM for:
+| Agent                        | Technology                   | Purpose                                                       |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------------- |
+| **📧 Email Ingestion**       | Gmail API + OAuth            | Monitors inbox for supplier communications                    |
+| **🔍 Data Extraction**       | Google Gemini API            | Extracts structured data (order IDs, dates, prices, tracking) |
+| **⚖️ Risk Analysis**         | Gemini API + Historical Data | Identifies delays, price changes, quality issues              |
+| **💡 Recommendation Engine** | Gemini API                   | Generates actionable insights with confidence scores          |
+| **💾 Database Sync**         | Supabase Realtime            | Updates dashboard instantly                                   |
 
-- Natural language understanding of supplier emails
-- Extracting structured data from unstructured text
-- Generating human-readable risk assessments
-- Creating smart recommendations based on historical data
+### ⚡ n8n Production Implementation
 
-### ⚡ n8n Workflow Automation
-
-While we showcase the Opus workflow design, our implementation also leverages n8n for production automation:
-
-**n8n Implementation Details:**
+While our architecture is designed in Opus AI, we use n8n for production-ready automation:
 
 <img width="581" height="530" alt="Screenshot 2025-11-18 131630" src="https://github.com/user-attachments/assets/cc8dd40d-4f9c-4c71-a72a-b32e9cadbd41" />
 
+**Key Workflows:**
 
-We've built multiple workflow pipelines:
+- 📬 Email Processing Pipeline
+- 🧠 AI Data Extraction (Gemini API)
+- ⚠️ Risk Analysis & Scoring
+- 🔄 Real-time Database Updates
+- 📢 Stakeholder Notifications
 
-- **Email Processing Pipeline**: Automatically fetches and processes Gmail messages
-- **Data Extraction Pipeline**: Uses Gemini API to parse email content
-- **Risk Analysis Pipeline**: Identifies patterns and flags potential issues
-- **Database Operations**: Updates Supabase tables in real-time
-- **Notification System**: Alerts team members of critical events
+---
 
-The n8n workflows mirror our Opus design but give us production-grade reliability and easier debugging during development.
+## 🚀 Quick Start
 
-## Themes? We Got 'Em!
+### Prerequisites
 
-Tired of boring purple UIs? Switch to our ArcFi-inspired orange theme. Dark mode is baked in because we know you're coding at 2 AM.
-
-## Getting Started
-
-### What You'll Need
-
-- Node.js (v18 or higher)
+- Node.js 18+
 - Python 3.8+
-- A Supabase account (free tier works great)
-- A Google Cloud account (for OAuth)
+- Supabase account
+- Google Cloud account (for OAuth)
 
-### Setting It Up
-
-1. **Clone this bad boy**
+### Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/abdullahxyz85/AI-Supply-Guardian.git
 cd AI-Supply-Guardian
-```
 
-2. **Install the frontend stuff**
-
-```bash
+# Install dependencies
 npm install
-```
 
-3. **Set up your environment variables**
-
-Create a `.env` file in the root:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_key
-VITE_FIREBASE_API_KEY=your_firebase_key
-VITE_FIREBASE_AUTH_DOMAIN=your_firebase_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-```
-
-4. **Set up Supabase**
-
-Run the SQL files in your Supabase SQL Editor:
-
-```bash
-# In this order:
-1. supabase/schema.sql
-2. supabase/migrations/add_google_oauth_tokens.sql
-3. supabase/migrations/add_ai_analysis_results.sql
-```
-
-5. **Backend setup** (optional, for AI agents)
-
-```bash
-cd backend
-pip install -r requirements.txt
+# Set up environment variables
 cp .env.example .env
-# Add your API keys to .env
-```
+# Add your Supabase, Firebase, and API keys
 
-6. **Fire it up!**
+# Set up database
+# Run these in Supabase SQL Editor:
+# 1. supabase/schema.sql
+# 2. supabase/migrations/add_google_oauth_tokens.sql
+# 3. supabase/migrations/add_ai_analysis_results.sql
 
-```bash
+# Start development server
 npm run dev
 ```
 
-Visit `http://localhost:5173` and you're good to go!
+Visit `http://localhost:5173` 🎉
 
-## How the AI Magic Works
+---
 
-Our agent system is built on Opus AI's orchestration platform, leveraging Google Gemini API for natural language processing.
+## 📊 Database Schema
 
-### The Agent Architecture
+| Table                 | Purpose                                  |
+| --------------------- | ---------------------------------------- |
+| `suppliers`           | Supplier directory and contact info      |
+| `inventory`           | Stock levels and item tracking           |
+| `orders`              | Order management and status              |
+| `emails`              | Raw supplier email data                  |
+| `extracted_data`      | AI-parsed email information              |
+| `risk_analysis`       | Risk assessments and scores              |
+| `audit_log`           | System change tracking                   |
+| `google_oauth_tokens` | OAuth credentials for Gmail              |
+| `ai_analysis_results` | Detailed AI insights and recommendations |
 
-**Primary Workflow (Opus-Powered):**
+---
 
-1. **Email Ingestion Agent**: Monitors Gmail inbox for supplier communications
-2. **Extraction Agent**: Uses Gemini API to read emails and extract structured data (order IDs, dates, prices, tracking numbers)
-3. **Risk Analysis Agent**: Evaluates extracted data against historical patterns and flags potential issues
-4. **Recommendation Engine**: Generates actionable insights with confidence scores
-5. **Database Sync Agent**: Updates your dashboard in real-time
-
-The entire flow is orchestrated through Opus AI, which manages agent handoffs, error handling, and ensures reliable processing even with high email volumes.
-
-### Why This Tech Stack?
-
-- **Opus AI**: Provides visual workflow building and robust agent orchestration (hackathon requirement)
-- **Google Gemini API**: Handles complex natural language understanding with high accuracy (hackathon requirement)
-- **n8n**: Gives us production-ready automation and easy debugging
-- **Supabase**: Real-time updates without the backend complexity
-
-Both agents work autonomously once you connect your Gmail. They process emails in the background and update your dashboard as new information arrives.
-
-## Database Schema
-
-We've got 9 main tables:
-
-- `suppliers` - Your supplier list
-- `inventory` - Stock tracking
-- `orders` - Order management
-- `emails` - Raw email data
-- `extracted_data` - AI-extracted information
-- `risk_analysis` - Risk assessments
-- `audit_log` - Change tracking
-- `google_oauth_tokens` - OAuth credentials
-- `ai_analysis_results` - Detailed AI analysis
-
-All set up with proper relationships and real-time subscriptions.
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 AI-Supply-Guardian/
 ├── src/
-│   ├── components/      # React components
-│   │   ├── Auth/        # Login/signup
-│   │   ├── Inventory/   # Stock management
-│   │   ├── Orders/      # Order tracking
-│   │   ├── Risk/        # Email & risk analysis
-│   │   └── Suppliers/   # Supplier management
-│   ├── contexts/        # React contexts (auth, theme)
-│   ├── lib/             # Utilities (Supabase, Firebase)
-│   └── types/           # TypeScript types
-├── backend/             # Python backend for AI agents
-├── supabase/           # Database schema & migrations
-└── public/             # Static assets
+│   ├── components/          # React components
+│   │   ├── Auth/           # Authentication UI
+│   │   ├── Inventory/      # Stock management
+│   │   ├── Orders/         # Order tracking
+│   │   ├── Risk/           # AI analysis & email tracking
+│   │   └── Suppliers/      # Supplier management
+│   ├── contexts/           # React contexts (auth, theme)
+│   ├── lib/                # Utilities (Supabase, Firebase)
+│   └── types/              # TypeScript definitions
+├── backend/                # Python AI agents
+├── supabase/              # Database schema & migrations
+└── docs/                  # Workflow diagrams
 ```
-
-## Contributing
-
-Found a bug? Have a cool idea? PRs are welcome! Just:
-
-1. Fork it
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## Known Issues
-
-- AI agent integration is still being refined (works, but not perfect)
-- Email parsing can be finicky with unusual formats
-- Real-time updates sometimes lag (Supabase free tier limits)
-
-## Roadmap
-
-Things we're working on:
-
-- [ ] Multi-language support
-- [ ] Mobile app
-- [ ] Advanced analytics dashboard
-- [ ] Supplier performance scoring
-- [ ] Automated reordering suggestions
-- [ ] Integration with major ERPs
-
-## License
-
-MIT - do whatever you want with it, just don't sue us 😄
-
-## Questions?
-
-Open an issue or reach out. We're here to help!
 
 ---
 
-Built with ☕ and late nights by developers who were tired of drowning in supplier emails.
+## 🎯 Why This Tech Stack?
+
+| Technology             | Reason                                                                     |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **Opus AI**            | Visual workflow orchestration + agent management _(Hackathon Requirement)_ |
+| **Google Gemini API**  | Advanced NLP for email understanding _(Hackathon Requirement)_             |
+| **n8n**                | Production-ready automation with easy debugging                            |
+| **Supabase**           | Real-time database updates without backend complexity                      |
+| **React + TypeScript** | Type-safe, modern frontend development                                     |
+| **Tailwind CSS**       | Rapid UI development with consistent design                                |
+
+---
+
+## 📜 License
+
+MIT - Build whatever you want with it!
+
+---
+
+**Built with ☕ by developers tired of drowning in supplier emails.**
