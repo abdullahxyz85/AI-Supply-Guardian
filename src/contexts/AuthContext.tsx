@@ -4,10 +4,12 @@ import {
   useEffect,
   useState,
   ReactNode,
+  useRef,
 } from "react";
 import { User as SupabaseUser, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import authTokenManager from "../lib/authTokenManager";
+import { syncUserToSupabase } from "../lib/userSync";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8050';
 
@@ -20,7 +22,7 @@ interface GoogleUser {
 
 type User = SupabaseUser | GoogleUser | null;
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User;
   session: Session | null;
   loading: boolean;
@@ -51,78 +53,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authProvider, setAuthProvider] = useState<'supabase' | 'google' | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const syncTriggered = useRef(false); // The gate to ensure the sync happens only once.
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      setLoading(true);
+    // 1. Handle the redirect from Google OAuth. This runs only once on initial load.
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('auth') === 'success' && urlParams.get('user_id')) {
+      const userId = urlParams.get('user_id')!;
+      // Store the user ID so we can pick it up in the listener.
+      localStorage.setItem('user_id', userId);
+      // Clean the URL.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const authStatus = urlParams.get('auth');
-      const userId = urlParams.get('user_id');
-      const error = urlParams.get('error');
-
-      if (authStatus === 'success' && userId) {
-        // Immediately store the user_id to prevent race conditions
-        localStorage.setItem('user_id', userId);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        const initialized = await authTokenManager.initialize(userId);
-        if (initialized) {
-          setUser(authTokenManager.getUser());
-          setAccessToken(authTokenManager.getAccessToken());
-          setRefreshToken(authTokenManager.getRefreshToken());
-          setAuthProvider('google');
-          setLoading(false);
-          return;
-        }
-      } else if (error) {
-        console.error('OAuth error from redirect:', decodeURIComponent(error));
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      const storedUserId = localStorage.getItem('user_id');
-      if (storedUserId) {
-        const initialized = await authTokenManager.initialize(storedUserId);
-        if (initialized) {
-          setUser(authTokenManager.getUser());
-          setAccessToken(authTokenManager.getAccessToken());
-          setRefreshToken(authTokenManager.getRefreshToken());
-          setAuthProvider('google');
-          setLoading(false);
-          return;
-        }
-      }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setSession(session);
-        setUser(session.user);
-        setAccessToken(session.access_token);
-        setRefreshToken(session.refresh_token);
-        setAuthProvider('supabase');
-      }
-      
-      setLoading(false);
-    };
-
-    initializeAuth();
-
+    // 2. Set up a single listener for all authentication events.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (authTokenManager.getUser() === null) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setAccessToken(session?.access_token ?? null);
-          setRefreshToken(session?.refresh_token ?? null);
-          setAuthProvider(session ? "supabase" : null);
+      async (_event, session) => {
+
+        // If a sync has already been triggered for this session, do nothing.
+        if (syncTriggered.current) {
+          setLoading(false);
+          return;
         }
+
+        // Case 1: A Supabase session is active (user logged in via email/pass, or just signed up)
+        if (session) {
+          syncTriggered.current = true; // Close the gate immediately.
+          
+          setSession(session);
+          setUser(session.user);
+          setAccessToken(session.access_token);
+          setRefreshToken(session.refresh_token);
+          setAuthProvider("supabase");
+          
+          await syncUserToSupabase(session.user, session.access_token, session.refresh_token);
+          setLoading(false);
+          return;
+        }
+
+        // Case 2: No Supabase session, check for a pending Google session in local storage
+        const storedUserId = localStorage.getItem('user_id');
+        if (storedUserId) {
+          const initialized = await authTokenManager.initialize(storedUserId);
+          if (initialized) {
+            syncTriggered.current = true; // Close the gate immediately.
+
+            const googleUser = authTokenManager.getUser();
+            const googleAccessToken = authTokenManager.getAccessToken();
+            const googleRefreshToken = authTokenManager.getRefreshToken();
+
+            setUser(googleUser);
+            setAccessToken(googleAccessToken);
+            setRefreshToken(googleRefreshToken);
+            setAuthProvider('google');
+            
+            await syncUserToSupabase(googleUser, googleAccessToken, googleRefreshToken);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Case 3: No sessions found anywhere, the user is logged out.
+        setLoading(false);
       }
     );
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // IMPORTANT: Run this effect only once on initial application mount.
 
   const googleSignIn = async () => {
     setIsLoading(true);
@@ -140,7 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
+    // Supabase onAuthStateChange will handle the post-signup flow.
+    return await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -149,19 +149,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       },
     });
-    return { error };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    // Supabase onAuthStateChange will handle the post-signin flow.
+    return await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    return { error };
   };
 
   const signOut = async () => {
-    const provider = authProvider; // Capture the provider before state changes
+    const provider = authProvider;
     setLoading(true);
     
     if (provider === 'supabase') {
@@ -170,12 +169,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authTokenManager.logout();
     }
 
-    // Reset all auth-related state
+    // Reset all state.
     setUser(null);
     setSession(null);
     setAccessToken(null);
     setRefreshToken(null);
     setAuthProvider(null);
+    syncTriggered.current = false; // IMPORTANT: Reset the sync gate on sign out.
     setLoading(false);
   };
 

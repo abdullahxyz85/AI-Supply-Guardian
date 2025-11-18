@@ -109,25 +109,26 @@ export async function getInventory() {
 }
 
 export async function getLowStockItems() {
-  const { data, error } = await supabase
+  // Fetch all inventory items and filter them on the client-side.
+  // This avoids a complex query that can fail if column-to-column comparison isn't straightforward.
+  const { data: allData, error } = await supabase
     .from("inventory")
     .select("*")
-    .lt("current_stock", supabase.rpc("minimum_stock_level"))
     .order("current_stock");
 
   if (error) {
-    // Fallback query without RPC
-    const { data: allData, error: fallbackError } = await supabase
-      .from("inventory")
-      .select("*")
-      .order("current_stock");
-
-    if (fallbackError) throw fallbackError;
-    return (allData as Inventory[]).filter(
-      (item) => item.current_stock < (item.minimum_stock_level || 0)
-    );
+    console.error("Error fetching inventory for low stock check:", error);
+    throw error; // Rethrow the error to be handled by the calling function
   }
-  return data as Inventory[];
+
+  if (!allData) {
+    return [];
+  }
+
+  // Perform the filtering logic in the application
+  return (allData as Inventory[]).filter(
+    (item) => item.current_stock < (item.minimum_stock_level || 0)
+  );
 }
 
 export async function createInventoryItem(item: InventoryInput) {
@@ -489,10 +490,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       .from("risk_analysis")
       .select("id", { count: "exact", head: true })
       .eq("risk_level", "Medium"),
-    supabase
-      .from("inventory")
-      .select("*")
-      .lt("current_stock", supabase.rpc("minimum_stock_level")),
+    getLowStockItems(),
   ]);
 
   return {
@@ -501,7 +499,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     pending_orders: pendingOrdersResult.count || 0,
     high_risk_alerts: highRiskResult.count || 0,
     medium_risk_alerts: mediumRiskResult.count || 0,
-    low_stock_items: lowStockResult.data?.length || 0,
+    low_stock_items: lowStockResult.length || 0,
   };
 }
 

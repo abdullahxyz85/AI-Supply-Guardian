@@ -297,7 +297,7 @@ async def google_callback(code: str, state: str):
                 expires_in=expires_in,
                 scopes=scope.split()
             )
-            
+
             # Redirect to frontend with success
             redirect_url = f"{FRONTEND_URL}?auth=success&user_id={userinfo['id']}"
             return RedirectResponse(url=redirect_url, status_code=302)
