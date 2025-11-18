@@ -4,6 +4,9 @@ A smart supply chain management system powered by AI agents that automatically p
 
 <img width="1894" height="854" alt="Screenshot 2025-11-18 141329" src="https://github.com/user-attachments/assets/e6cfcbab-c708-4b9b-999c-657df54eb4ea" />
 
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## ✨ What We Built
 
@@ -22,6 +25,10 @@ Managing supplier communications is painful. Hundreds of emails about delays, pr
 - **Beautiful Dashboard**: Actually looks good and is easy to use (we're proud of this one!)
 
 <img width="1880" height="934" alt="image" src="https://github.com/user-attachments/assets/598690f3-0df8-4ae1-adb3-c68cc2302bba" />
+
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## Hackathon Technologies
 
@@ -48,7 +55,9 @@ We designed our entire agent system using Opus workflow builder. The platform he
 - **LLM:** Google Gemini API _(Hackathon Requirement)_
 - **Automation:** n8n Workflows
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## AI Agent Architecture
 
@@ -86,6 +95,10 @@ graph LR
 | **Recommendation Engine** | Gemini API                   | Generates actionable insights with confidence scores          |
 | **Database Sync**         | Supabase Realtime            | Updates dashboard instantly                                   |
 
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
+
 ### ⚡ n8n Production Implementation
 
 While our architecture is designed in Opus AI, we use n8n for production-ready automation:
@@ -100,7 +113,9 @@ While our architecture is designed in Opus AI, we use n8n for production-ready a
 - Real-time Database Updates
 - Stakeholder Notifications
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## Quick Start
 
@@ -137,7 +152,9 @@ npm run dev
 
 Visit `http://localhost:5173` 🎉
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## Database Schema
 
@@ -153,7 +170,9 @@ Visit `http://localhost:5173` 🎉
 | `google_oauth_tokens` | OAuth credentials for Gmail              |
 | `ai_analysis_results` | Detailed AI insights and recommendations |
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## Project Structure
 
@@ -174,7 +193,9 @@ AI-Supply-Guardian/
 └── docs/                  # Workflow diagrams
 ```
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## Why This Tech Stack?
 
@@ -187,12 +208,16 @@ AI-Supply-Guardian/
 | **React + TypeScript** | Type-safe, modern frontend development                                     |
 | **Tailwind CSS**       | Rapid UI development with consistent design                                |
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 ## License
 
 MIT - Build whatever you want with it!
 
----
+<div align="center">
+  <img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="100px">
+</div>
 
 **Built with ☕ by developers tired of drowning in supplier emails.**
