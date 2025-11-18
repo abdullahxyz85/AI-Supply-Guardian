@@ -17,6 +17,57 @@ import hashlib
 import httpx
 import secrets
 import urllib.parse
+try:
+    from supabase import create_client, Client
+except ImportError:
+    # Fallback to using httpx directly if supabase import fails
+    import httpx as _httpx
+    Client = None
+    
+    def create_client(url: str, key: str):
+        """Fallback Supabase client using httpx directly"""
+        class SimpleSupabaseClient:
+            def __init__(self, url: str, key: str):
+                self.url = url.rstrip('/')
+                self.key = key
+                self.headers = {
+                    'apikey': key,
+                    'Authorization': f'Bearer {key}',
+                    'Content-Type': 'application/json'
+                }
+            
+            def table(self, table_name: str):
+                return SimpleTable(self.url, self.headers, table_name)
+        
+        class SimpleTable:
+            def __init__(self, url: str, headers: dict, table_name: str):
+                self.url = f\"{url}/rest/v1/{table_name}\"
+                self.headers = headers
+                self.data_to_insert = None
+                self.conflict_column = None
+            
+            def upsert(self, data: dict, on_conflict: str = None):
+                self.data_to_insert = data
+                self.conflict_column = on_conflict
+                return self
+            
+            def execute(self):
+                params = {}
+                if self.conflict_column:
+                    params['on_conflict'] = self.conflict_column
+                    
+                with _httpx.Client() as client:
+                    response = client.post(
+                        self.url,
+                        json=self.data_to_insert,
+                        headers={**self.headers, 'Prefer': 'resolution=merge-duplicates'},
+                        params=params
+                    )
+                    response.raise_for_status()
+                    result = response.json()
+                    return type('Response', (), {'data': [result] if isinstance(result, dict) else result})()
+        
+        return SimpleSupabaseClient(url, key)
 
 load_dotenv()
 
@@ -46,6 +97,15 @@ if not ENCRYPTION_KEY:
     raise ValueError("ENCRYPTION_KEY must be set in environment variables")
 key = base64.urlsafe_b64encode(hashlib.sha256(ENCRYPTION_KEY.encode()).digest())
 cipher_suite = Fernet(key)
+
+# Supabase configuration
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
+
+if not all([SUPABASE_URL, SUPABASE_ANON_KEY]):
+    raise ValueError("Supabase credentials must be set in environment variables")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 # Google OAuth2 configuration
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -175,6 +235,42 @@ async def get_user_session(user_id: str) -> Optional[UserSession]:
         updated_at=session["updated_at"]
     )
 
+async def store_tokens_in_supabase(
+    google_user_id: str,
+    email: str,
+    name: str,
+    picture: Optional[str],
+    access_token: str,
+    refresh_token: Optional[str],
+    supabase_user_id: Optional[str] = None
+) -> dict:
+    """Store Google OAuth tokens in Supabase"""
+    try:
+        token_data = {
+            "google_user_id": google_user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "access_token": access_token,
+            "refresh_token": refresh_token or "",
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        if supabase_user_id:
+            token_data["user_id"] = supabase_user_id
+        
+        # Upsert (insert or update) based on google_user_id
+        response = supabase.table("google_oauth_tokens").upsert(
+            token_data,
+            on_conflict="google_user_id"
+        ).execute()
+        
+        print(f"✅ Stored tokens in Supabase for user: {email}")
+        return response.data[0] if response.data else {}
+    except Exception as e:
+        print(f"❌ Error storing tokens in Supabase: {str(e)}")
+        return {}
+
 # ============================================================================
 # OAuth2 Endpoints
 # ============================================================================
@@ -189,14 +285,12 @@ async def root():
     }
 
 @app.get("/api/auth/google/login")
-async def google_login(prompt: Optional[str] = None):
+async def google_login(prompt: Optional[str] = "consent"):
     """
     Initiate Google OAuth2 login flow
     Returns the authorization URL for the frontend to redirect to
     
-    prompt options:
-    - None or 'select_account': Shows account picker (default for returning users)
-    - 'consent': Forces consent screen (use for first-time login)
+    Always requests consent to ensure we get refresh tokens
     """
     state = generate_state()
     
@@ -204,7 +298,7 @@ async def google_login(prompt: Optional[str] = None):
     oauth_states[state] = {
         "created_at": datetime.utcnow().isoformat(),
         "type": "login",
-        "prompt": prompt # Store the prompt type
+        "prompt": prompt
     }
     
     # Build authorization URL
@@ -222,13 +316,9 @@ async def google_login(prompt: Optional[str] = None):
             "https://www.googleapis.com/auth/calendar.events"
         ]),
         "access_type": "offline",
+        "prompt": "consent",  # Always force consent to get refresh token
         "state": state
     }
-    
-    # Only add prompt parameter if explicitly specified
-    # If None, Google will use default behavior (select_account)
-    if prompt:
-        params["prompt"] = prompt
     
     auth_url = f"{GOOGLE_AUTH_URL}?{urllib.parse.urlencode(params)}"
     
@@ -293,7 +383,7 @@ async def google_callback(code: str, state: str):
             
             userinfo = userinfo_response.json()
             
-            # Store user session
+            # Store user session in memory
             await store_user_session(
                 user_id=userinfo["id"],
                 email=userinfo["email"],
@@ -303,6 +393,16 @@ async def google_callback(code: str, state: str):
                 refresh_token=refresh_token,
                 expires_in=expires_in,
                 scopes=scope.split()
+            )
+            
+            # Store tokens in Supabase
+            await store_tokens_in_supabase(
+                google_user_id=userinfo["id"],
+                email=userinfo["email"],
+                name=userinfo.get("name", userinfo["email"]),
+                picture=userinfo.get("picture"),
+                access_token=access_token,
+                refresh_token=refresh_token
             )
 
             # Redirect to frontend with success

@@ -22,7 +22,7 @@ export async function createSupabaseUserFromGoogle(
       .from('google_oauth_tokens')
       .select('user_id')
       .eq('google_user_id', googleUser.user_id)
-      .single();
+      .maybeSingle();  // Use maybeSingle() instead of single() to avoid 406 error
     
     if (!mappingError && existingMapping?.user_id) {
       // User already exists and is mapped
@@ -56,12 +56,12 @@ export async function createSupabaseUserFromGoogle(
           signUpError.message.includes('User already registered')) {
         console.log('ℹ️ User already exists in Supabase:', googleUser.email);
         
-        // User exists - first try to fetch their Supabase UUID from google_oauth_tokens table
+        // User exists - fetch their Supabase UUID from google_oauth_tokens table
         const { data: tokenData, error: tokenError } = await supabase
           .from('google_oauth_tokens')
           .select('user_id')
           .eq('google_user_id', googleUser.user_id)
-          .single();
+          .maybeSingle();  // Use maybeSingle() instead of single() to avoid 406 error
         
         if (!tokenError && tokenData?.user_id) {
           localStorage.setItem('supabase_user_id', tokenData.user_id);
@@ -79,18 +79,11 @@ export async function createSupabaseUserFromGoogle(
           localStorage.setItem('supabase_user_id', userId);
           console.log('✅ Retrieved Supabase user ID from auth.users:', userId);
           
-          // Create the mapping for future use
-          await supabase.from('google_oauth_tokens').upsert({
-            google_user_id: googleUser.user_id,
-            email: googleUser.email,
-            name: googleUser.name,
-            picture: googleUser.picture,
+          // Tokens are stored by backend, just store the user_id mapping
+          await supabase.from('google_oauth_tokens').update({
             user_id: userId,
-            access_token: 'managed_by_backend',
-            refresh_token: 'managed_by_backend',
-          }, {
-            onConflict: 'google_user_id'
-          });
+            updated_at: new Date().toISOString()
+          }).eq('google_user_id', googleUser.user_id);
           
           return { user: null, session: null };
         }
@@ -111,18 +104,8 @@ export async function createSupabaseUserFromGoogle(
       // Store the Supabase UUID for future database operations
       localStorage.setItem('supabase_user_id', signUpData.user.id);
       
-      // Also store the mapping in google_oauth_tokens table for future lookups
-      await supabase.from('google_oauth_tokens').upsert({
-        google_user_id: googleUser.user_id,
-        email: googleUser.email,
-        name: googleUser.name,
-        picture: googleUser.picture,
-        user_id: signUpData.user.id,
-        access_token: 'managed_by_backend',
-        refresh_token: 'managed_by_backend',
-      }, {
-        onConflict: 'google_user_id'
-      });
+      // Tokens are now stored by the backend after OAuth callback
+      // No need to store placeholder values here
     }
     
     return signUpData;
