@@ -62,7 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const error = urlParams.get('error');
 
       if (authStatus === 'success' && userId) {
+        // Immediately store the user_id to prevent race conditions
+        localStorage.setItem('user_id', userId);
         window.history.replaceState({}, document.title, window.location.pathname);
+        
         const initialized = await authTokenManager.initialize(userId);
         if (initialized) {
           setUser(authTokenManager.getUser());

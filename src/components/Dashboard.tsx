@@ -66,12 +66,29 @@ export function Dashboard({ onNavigateToLanding }: DashboardProps) {
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!user?.user_metadata?.full_name) return "U";
-    const names = user.user_metadata.full_name.split(" ");
+    if (!user) return "U";
+
+    let fullName: string | undefined | null = null;
+
+    // Check for Google user name
+    if ('name' in user && user.name) {
+      fullName = user.name;
+    }
+    // Check for Supabase user full_name
+    else if ('user_metadata' in user && user.user_metadata?.full_name) {
+      fullName = user.user_metadata.full_name;
+    }
+
+    if (!fullName) return "U";
+
+    const names = fullName.split(" ").filter(Boolean);
     if (names.length >= 2) {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }
-    return names[0][0].toUpperCase();
+    if (names.length === 1 && names[0]) {
+      return names[0][0].toUpperCase();
+    }
+    return "U";
   };
 
   return (
