@@ -23,20 +23,6 @@ Managing supplier communications is painful. Hundreds of emails about delays, pr
 
 <img width="1880" height="934" alt="image" src="https://github.com/user-attachments/assets/598690f3-0df8-4ae1-adb3-c68cc2302bba" />
 
-
-## The Tech Stack
-
-We built this with some solid tools:
-
-- **Frontend**: React + TypeScript + Vite (fast and modern)
-- **Styling**: Tailwind CSS (because life's too short for writing custom CSS)
-- **Backend**: Python with Supabase (PostgreSQL for the win)
-- **Auth**: Firebase + Google OAuth (secure and familiar)
-- **AI Orchestration**: Opus AI Workflows (hackathon required technology)
-- **LLM**: Google Gemini API (hackathon required technology)
-- **Workflow Engine**: n8n for automation
-- **Icons**: Lucide React (clean and consistent)
-
 ## Hackathon Technologies
 
 This project was built specifically using the required hackathon technologies:
@@ -52,7 +38,6 @@ We designed our entire agent system using Opus workflow builder. The platform he
 - **Inventory Management** - Track stock levels with intelligent alerts
 - **Order Tracking** - Monitor all orders and their status in real-time
 - **Supplier Analytics** - Performance tracking and reliability scoring
-- **Dual Themes** - Switch between Purple and ArcFi-Orange dark themes
 
 ## Tech Stack
 
