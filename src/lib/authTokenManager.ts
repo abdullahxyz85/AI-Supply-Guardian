@@ -3,7 +3,7 @@
  * Handles automatic token refresh and storage
  */
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 interface User {
   user_id: string;

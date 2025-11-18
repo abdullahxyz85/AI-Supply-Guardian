@@ -11,7 +11,7 @@ import { supabase } from "../lib/supabase";
 import authTokenManager from "../lib/authTokenManager";
 import { syncUserToSupabase, createSupabaseUserFromGoogle } from "../lib/userSync";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '/api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 interface GoogleUser {
   user_id: string;
