@@ -16,10 +16,13 @@ Managing supplier communications is painful. Hundreds of emails about delays, pr
 - **Email Intelligence**: Connects to your Gmail and automatically processes supplier communications
 - **Smart Data Extraction**: AI agents pull out order details, delivery dates, prices, and tracking numbers
 - **Risk Detection**: Spots delays, price hikes, and quality issues before they hurt your business
-- **Supplier Management**: Keep track of all your suppliers and their performance in one place
+- **Supplier Management**: Keep track ofll your orders all your suppliers and their performance in one place
 - **Inventory Tracking**: Monitor stock levels and get alerts when things run low
-- **Order Management**: See all your orders and their status at a glance
+- **Order Management**: See a and their status at a glance
 - **Beautiful Dashboard**: Actually looks good and is easy to use (we're proud of this one!)
+
+<img width="1880" height="934" alt="image" src="https://github.com/user-attachments/assets/598690f3-0df8-4ae1-adb3-c68cc2302bba" />
+
 
 ## The Tech Stack
 
