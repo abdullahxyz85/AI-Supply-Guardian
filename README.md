@@ -35,9 +35,9 @@ We built this with some solid tools:
 
 This project was built specifically using the required hackathon technologies:
 
-### 🎯 Opus AI Workflow
+### 🎯 Opus Workflow
 
-We designed our entire agent system using Opus AI's workflow builder. The platform helped us orchestrate complex multi-agent interactions for email processing and risk analysis.
+We designed our entire agent system using Opus workflow builder. The platform helped us orchestrate complex multi-agent interactions for email processing and risk analysis.
 
 **Our Opus Workflow Architecture:**
 
