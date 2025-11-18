@@ -69,7 +69,8 @@ While we showcase the Opus workflow design, our implementation also leverages n8
 
 **n8n Implementation Details:**
 
-![n8n Workflows](docs/n8n-workflows.png)
+<img width="581" height="530" alt="Screenshot 2025-11-18 131630" src="https://github.com/user-attachments/assets/cc8dd40d-4f9c-4c71-a72a-b32e9cadbd41" />
+
 
 We've built multiple workflow pipelines:
 
