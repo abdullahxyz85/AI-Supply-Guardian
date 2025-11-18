@@ -34,7 +34,7 @@ services:
     container_name: ai-supply-guardian-frontend
     restart: unless-stopped
     ports:
-      - "3035:80"
+      - "3035:3035"
     depends_on:
       - backend
     networks:
