@@ -113,9 +113,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 # Google OAuth2 configuration
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-#GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
-GOOGLE_REDIRECT_URI = "https://ai-supply-guardian.zentraid.com:8055/api/auth/google/callback"
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://ai-supply-guardian.zentraid.com:3035")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
+# GOOGLE_REDIRECT_URI = "https://ai-supply-guardian.zentraid.com:8055/api/auth/google/callback"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-supply-guardian.zentraid.com")
 
 # Validate required environment variables
 if not all([GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI]):
