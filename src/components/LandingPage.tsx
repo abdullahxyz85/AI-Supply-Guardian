@@ -15,6 +15,7 @@ import {
 import { useState, useEffect } from "react";
 import { AuthModal } from "./Auth/AuthModal";
 import { useAuth } from "../contexts/AuthContext";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface LandingPageProps {
   onNavigateToDashboard: () => void;
@@ -73,7 +74,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           {/* Animated Gradient Clouds */}
           <div className="absolute top-0 left-0 w-full h-full">
             <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute top-40 right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl animate-float-delay-1"></div>
+            <div className="absolute top-40 right-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-float-delay-1"></div>
             <div className="absolute bottom-40 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float-delay-2"></div>
             <div className="absolute bottom-20 right-1/3 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl animate-float-delay-3"></div>
           </div>
@@ -106,13 +107,13 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
       {/* Content Wrapper with higher z-index */}
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 border-b border-indigo-500/20 z-50 shadow-lg shadow-indigo-500/5">
+        <header className="fixed top-0 left-0 right-0 border-b border-primary/20 z-50 shadow-lg shadow-primary/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-2">
-                <Shield className="w-8 h-8 text-indigo-500" />
+                <Shield className="w-8 h-8 text-primary" />
                 <span className="text-xl font-semibold text-white">
-                  AI Supply Guardian
+                  AI Supply <span className="text-primary">Guardian</span>
                 </span>
               </div>
 
@@ -144,16 +145,14 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               </nav>
 
               <div className="hidden md:flex items-center space-x-4">
+                <ThemeToggle />
                 {user ? (
-                  <>
-                    <span className="text-white">Welcome, {user.name || user.email}</span>
-                    <button
-                      onClick={onNavigateToDashboard}
-                      className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
-                    >
-                      Dashboard
-                    </button>
-                  </>
+                  <button
+                    onClick={onNavigateToDashboard}
+                    className="gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 duration-300"
+                  >
+                    Dashboard
+                  </button>
                 ) : (
                   <>
                     <button
@@ -187,7 +186,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
           </div>
 
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-indigo-500/20 bg-[#0a0e1a]/60 backdrop-blur-xl">
+            <div className="md:hidden border-t border-primary/20 bg-[#0a0e1a]/60 backdrop-blur-xl">
               <div className="px-4 py-4 space-y-3">
                 <a
                   href="#features"
@@ -216,7 +215,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {user ? (
                   <button
                     onClick={onNavigateToDashboard}
-                    className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-indigo-500/30"
+                    className="block w-full gradient-button text-white px-6 py-2 rounded-lg transition shadow-lg shadow-primary/30"
                   >
                     Dashboard
                   </button>
@@ -256,9 +255,8 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                  <span className="text-blue-400">AI </span>
-                  <span className="text-blue-300">Supply </span>
-                  <span className="gradient-text">Guardian</span>
+                  <span className="text-white">AI Supply </span>
+                  <span className="text-primary">Guardian</span>
                 </h1>
                 <h2 className="text-2xl lg:text-3xl font-semibold text-white mb-6">
                   Smart Supply Chain Assistant
@@ -271,7 +269,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={user ? onNavigateToDashboard : handleSignUp}
-                    className="gradient-button text-white px-8 py-4 rounded-lg transition text-lg font-medium flex items-center justify-center space-x-2 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 duration-300"
+                    className="gradient-button text-white px-8 py-4 rounded-lg transition text-lg font-medium flex items-center justify-center space-x-2 shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 duration-300"
                   >
                     <span>
                       {user ? "Go to Dashboard" : "Start Your Supply Journey"}
@@ -282,12 +280,12 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               </div>
 
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-[#2a2f4a] to-[#232840] rounded-2xl p-6 shadow-2xl border border-indigo-500/30 group-hover:border-indigo-500/50 transition-all duration-500">
-                  <div className="bg-[#1e2337] rounded-xl shadow-2xl p-6 border border-gray-700/50 group-hover:border-gray-600/50 transition-all duration-500 group-hover:shadow-indigo-500/20">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary to-primary rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-bg-elevated to-bg-card rounded-2xl p-6 shadow-2xl border border-primary/30 group-hover:border-primary/50 transition-all duration-500">
+                  <div className="bg-elevated rounded-xl shadow-2xl p-6 border border-gray-700/50 group-hover:border-gray-600/50 transition-all duration-500 group-hover:shadow-primary/20">
                     <div className="flex items-center mb-4 group-hover:scale-[1.02] transition-transform duration-300">
-                      <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-indigo-500/30 transition-colors duration-300">
-                        <Mail className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors duration-300" />
+                      <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-primary/30 transition-colors duration-300">
+                        <Mail className="w-5 h-5 text-primary group-hover:text-primary transition-colors duration-300" />
                       </div>
                       <h3 className="font-semibold text-white group-hover:text-gray-100 transition-colors duration-300">
                         My supplier mentioned a potential 2-week delay. Is this
@@ -295,7 +293,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                       </h3>
                     </div>
 
-                    <div className="bg-gradient-to-br from-[#1a4d3a] to-[#15402f] rounded-lg p-4 mb-4 border border-green-500/30 shadow-lg hover:shadow-green-500/20 hover:border-green-500/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                    <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 rounded-lg p-4 mb-4 border border-green-500/30 shadow-lg hover:shadow-green-500/20 hover:border-green-500/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer">
                       <div className="flex items-start space-x-2 mb-2">
                         <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <CheckCircle className="w-5 h-5 text-green-400 hover:text-green-300 transition-colors duration-300" />
@@ -314,7 +312,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-[#1e3a52] to-[#193449] rounded-lg p-4 border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                    <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/20 rounded-lg p-4 border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer">
                       <div className="flex items-start space-x-2">
                         <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <ArrowRight className="w-5 h-5 text-blue-400 hover:text-blue-300 transition-colors duration-300" />
@@ -355,7 +353,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               {/* Real-time Risk Alerts - Red/Orange Theme */}
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-300 animate-pulse"></div>
-                <div className="relative bg-[#1e2337] rounded-xl p-8 shadow-2xl hover:shadow-red-500/25 transition-all duration-300 border border-red-500/20 hover:border-red-500/50 hover:-translate-y-2 cursor-pointer">
+                <div className="relative bg-elevated rounded-xl p-8 shadow-2xl hover:shadow-red-500/25 transition-all duration-300 border border-red-500/20 hover:border-red-500/50 hover:-translate-y-2 cursor-pointer">
                   <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-red-500/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                     <Bell className="w-6 h-6 text-red-400 group-hover:text-red-300 transition-colors duration-300" />
                   </div>
@@ -369,14 +367,14 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 </div>
               </div>
 
-              {/* AI Email Analysis - Purple Theme */}
+              {/* AI Email Analysis */}
               <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-300 animate-pulse"></div>
-                <div className="relative bg-[#1e2337] rounded-xl p-8 shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 border border-purple-500/20 hover:border-purple-500/50 hover:-translate-y-2 cursor-pointer">
-                  <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
-                    <Mail className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors duration-300" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-primary to-primary rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-300 animate-pulse"></div>
+                <div className="relative bg-elevated rounded-xl p-8 shadow-2xl hover:shadow-primary/25 transition-all duration-300 border border-primary/20 hover:border-primary/50 hover:-translate-y-2 cursor-pointer">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
+                    <Mail className="w-6 h-6 text-primary group-hover:text-primary transition-colors duration-300" />
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">
+                  <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-primary transition-colors duration-300">
                     AI Email Analysis
                   </h3>
                   <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
@@ -389,7 +387,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               {/* Smart Dashboard - Blue/Cyan Theme */}
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-300 animate-pulse"></div>
-                <div className="relative bg-[#1e2337] rounded-xl p-8 shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 border border-blue-500/20 hover:border-blue-500/50 hover:-translate-y-2 cursor-pointer">
+                <div className="relative bg-elevated rounded-xl p-8 shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 border border-blue-500/20 hover:border-blue-500/50 hover:-translate-y-2 cursor-pointer">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                     <BarChart3 className="w-6 h-6 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
                   </div>
@@ -406,7 +404,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               {/* Supplier Management - Green/Emerald Theme */}
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 via-emerald-500 to-green-600 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500 group-hover:duration-300 animate-pulse"></div>
-                <div className="relative bg-[#1e2337] rounded-xl p-8 shadow-2xl hover:shadow-green-500/25 transition-all duration-300 border border-green-500/20 hover:border-green-500/50 hover:-translate-y-2 cursor-pointer">
+                <div className="relative bg-elevated rounded-xl p-8 shadow-2xl hover:shadow-green-500/25 transition-all duration-300 border border-green-500/20 hover:border-green-500/50 hover:-translate-y-2 cursor-pointer">
                   <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                     <Users className="w-6 h-6 text-green-400 group-hover:text-green-300 transition-colors duration-300" />
                   </div>
@@ -440,11 +438,11 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
             <div className="grid lg:grid-cols-2 gap-12 items-start">
               {/* Left Side - Interactive Demo */}
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                <div className="relative bg-gradient-to-br from-[#1e2842] to-[#1a2235] rounded-2xl p-6 shadow-2xl border border-indigo-500/20">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary to-primary rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                <div className="relative bg-gradient-to-br from-bg-elevated to-bg-card rounded-2xl p-6 shadow-2xl border border-primary/20">
                   {/* Browser-like window with macOS style buttons */}
-                  <div className="bg-[#1a1f37] rounded-xl shadow-2xl overflow-hidden border border-gray-700/50">
-                    <div className="bg-[#0f1419] px-4 py-3 flex items-center border-b border-gray-800/50">
+                  <div className="bg-darker rounded-xl shadow-2xl overflow-hidden border border-gray-700/50">
+                    <div className="bg-darker px-4 py-3 flex items-center border-b border-gray-800/50">
                       <div className="flex space-x-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
@@ -461,7 +459,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                     <div className="p-6 space-y-4 h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-500/50 scrollbar-track-gray-800/50">
                       {/* User Message 1 */}
                       <div className="flex items-start space-x-3 animate-fade-in">
-                        <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
                           <Users className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div className="flex-1">
@@ -480,7 +478,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                           <Shield className="w-5 h-5 text-green-400" />
                         </div>
                         <div className="flex-1 space-y-3">
-                          <div className="bg-[#1e2337] rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
+                          <div className="bg-elevated rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
                             <p className="text-gray-300 text-sm mb-2">
                               Based on your supply chain data, I can provide the
                               following analysis:
@@ -535,7 +533,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
                       {/* User Message 2 */}
                       <div className="flex items-start space-x-3 animate-fade-in pt-4">
-                        <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
                           <Users className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div className="flex-1">
@@ -555,7 +553,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                           <Shield className="w-5 h-5 text-green-400" />
                         </div>
                         <div className="flex-1 space-y-3">
-                          <div className="bg-[#1e2337] rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
+                          <div className="bg-elevated rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
                             <p className="text-gray-300 text-sm">
                               <span className="font-semibold text-indigo-300">
                                 Email Analysis Complete:
@@ -632,7 +630,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
                       {/* User Message 3 */}
                       <div className="flex items-start space-x-3 animate-fade-in pt-4">
-                        <div className="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
                           <Users className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div className="flex-1">
@@ -650,7 +648,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                           <Shield className="w-5 h-5 text-green-400" />
                         </div>
                         <div className="flex-1 space-y-3">
-                          <div className="bg-[#1e2337] rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
+                          <div className="bg-elevated rounded-2xl rounded-tl-none px-4 py-3 shadow-lg border border-gray-700/50">
                             <p className="text-gray-300 text-sm">
                               Found 3 suppliers with delivery issues in November
                               2025:
@@ -720,7 +718,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {/* Real-time Analysis Card */}
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-300"></div>
-                  <div className="relative bg-[#1e2337] rounded-xl p-6 shadow-xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
+                  <div className="relative bg-elevated rounded-xl p-6 shadow-xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500/20 transition-all duration-300 group-hover:scale-110">
                         <Shield className="w-6 h-6 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" />
@@ -741,14 +739,14 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
 
                 {/* Automated Document Processing Card */}
                 <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-300"></div>
-                  <div className="relative bg-[#1e2337] rounded-xl p-6 shadow-xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-300"></div>
+                  <div className="relative bg-elevated rounded-xl p-6 shadow-xl border border-primary/20 hover:border-primary/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-purple-500/20 transition-all duration-300 group-hover:scale-110">
-                        <Mail className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors duration-300" />
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
+                        <Mail className="w-6 h-6 text-primary group-hover:text-primary transition-colors duration-300" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-purple-300 transition-colors duration-300">
+                        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-primary transition-colors duration-300">
                           Automated Email Processing
                         </h3>
                         <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
@@ -764,7 +762,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {/* Step-by-Step Action Plans Card */}
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-300"></div>
-                  <div className="relative bg-[#1e2337] rounded-xl p-6 shadow-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
+                  <div className="relative bg-elevated rounded-xl p-6 shadow-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-green-500/20 transition-all duration-300 group-hover:scale-110">
                         <TrendingUp className="w-6 h-6 text-green-400 group-hover:text-green-300 transition-colors duration-300" />
@@ -786,7 +784,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {/* Smart Dashboard Insights Card */}
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl blur opacity-0 group-hover:opacity-30 transition duration-300"></div>
-                  <div className="relative bg-[#1e2337] rounded-xl p-6 shadow-xl border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
+                  <div className="relative bg-elevated rounded-xl p-6 shadow-xl border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300 cursor-pointer hover:-translate-y-1">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-all duration-300 group-hover:scale-110">
                         <BarChart3 className="w-6 h-6 text-orange-400 group-hover:text-orange-300 transition-colors duration-300" />
@@ -833,7 +831,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {/* Item 1 - No ERP Needed (Blue) */}
                 <div className="relative flex items-center">
                   <div className="w-1/2 pr-12 text-right">
-                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
+                    <div className="bg-elevated/80 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
                       <div className="inline-block px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-3">
                         PHASE 1
                       </div>
@@ -857,7 +855,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                   {/* Center Dot */}
                   <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-purple-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
                   <div className="w-1/2 pl-12">
-                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+                    <div className="bg-elevated/80 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
                       <div className="inline-block px-3 py-1 bg-purple-500/20 rounded-full text-purple-400 text-xs font-semibold mb-3">
                         PHASE 2
                       </div>
@@ -875,7 +873,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                 {/* Item 3 - Saves Time & Money (Green) */}
                 <div className="relative flex items-center">
                   <div className="w-1/2 pr-12 text-right">
-                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20">
+                    <div className="bg-elevated/80 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20">
                       <div className="inline-block px-3 py-1 bg-green-500/20 rounded-full text-green-400 text-xs font-semibold mb-3">
                         PHASE 3
                       </div>
@@ -899,7 +897,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
                   {/* Center Dot */}
                   <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full border-4 border-[#0a0e1a] z-10"></div>
                   <div className="w-1/2 pl-12">
-                    <div className="bg-[#1e2842]/80 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
+                    <div className="bg-elevated/80 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20">
                       <div className="inline-block px-3 py-1 bg-orange-500/20 rounded-full text-orange-400 text-xs font-semibold mb-3">
                         PHASE 4
                       </div>
@@ -933,7 +931,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
               <div className="flex items-center space-x-2">
                 <Shield className="w-6 h-6 text-indigo-400" />
                 <span className="text-lg font-semibold text-white">
-                  AI Supply Guardian
+                  AI Supply <span className="text-primary">Guardian</span>
                 </span>
               </div>
 
@@ -980,7 +978,7 @@ export function LandingPage({ onNavigateToDashboard }: LandingPageProps) {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg shadow-indigo-500/50 flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
+          className="fixed bottom-8 right-8 w-12 h-12 bg-primary hover:bg-primary/80 text-white rounded-full shadow-lg shadow-primary/50 flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
           aria-label="Scroll to top"
         >
           <ChevronUp className="w-6 h-6" />
