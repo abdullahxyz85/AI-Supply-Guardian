@@ -41,7 +41,7 @@ except ImportError:
         
         class SimpleTable:
             def __init__(self, url: str, headers: dict, table_name: str):
-                self.url = f\"{url}/rest/v1/{table_name}\"
+                self.url = f"{url}/rest/v1/{table_name}"
                 self.headers = headers
                 self.data_to_insert = None
                 self.conflict_column = None

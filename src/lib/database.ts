@@ -42,9 +42,12 @@ async function getUserId() {
 // =====================================================
 
 export async function getSuppliers() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("suppliers")
     .select("*")
+    .eq("user_id", userId)
     .order("name");
 
   if (error) throw error;
@@ -104,9 +107,12 @@ export async function deleteSupplier(id: string) {
 // =====================================================
 
 export async function getInventory() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("inventory")
     .select("*")
+    .eq("user_id", userId)
     .order("item_name");
 
   if (error) throw error;
@@ -114,11 +120,14 @@ export async function getInventory() {
 }
 
 export async function getLowStockItems() {
-  // Fetch all inventory items and filter them on the client-side.
+  const userId = await getUserId();
+  
+  // Fetch all inventory items for the logged-in user and filter them on the client-side.
   // This avoids a complex query that can fail if column-to-column comparison isn't straightforward.
   const { data: allData, error } = await supabase
     .from("inventory")
     .select("*")
+    .eq("user_id", userId)
     .order("current_stock");
 
   if (error) {
@@ -178,6 +187,8 @@ export async function deleteInventoryItem(id: string) {
 // =====================================================
 
 export async function getOrders() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("orders")
     .select(
@@ -186,6 +197,7 @@ export async function getOrders() {
       supplier:suppliers(*)
     `
     )
+    .eq("user_id", userId)
     .order("expected_delivery_date", { ascending: false });
 
   if (error) throw error;
@@ -193,10 +205,13 @@ export async function getOrders() {
 }
 
 export async function getOrdersBySupplier(supplierId: string) {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("orders")
     .select("*")
     .eq("supplier_id", supplierId)
+    .eq("user_id", userId)
     .order("expected_delivery_date", { ascending: false });
 
   if (error) throw error;
@@ -204,6 +219,8 @@ export async function getOrdersBySupplier(supplierId: string) {
 }
 
 export async function getPendingOrders() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("orders")
     .select(
@@ -213,6 +230,7 @@ export async function getPendingOrders() {
     `
     )
     .eq("status", "pending")
+    .eq("user_id", userId)
     .order("expected_delivery_date");
 
   if (error) throw error;
@@ -279,6 +297,8 @@ export async function deleteOrder(id: string) {
 // =====================================================
 
 export async function getEmails() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("emails")
     .select(
@@ -288,6 +308,7 @@ export async function getEmails() {
       extracted_data(*)
     `
     )
+    .eq("user_id", userId)
     .order("received_at", { ascending: false });
 
   if (error) throw error;
@@ -295,10 +316,13 @@ export async function getEmails() {
 }
 
 export async function getUnprocessedEmails() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("emails")
     .select("*")
     .eq("processed", false)
+    .eq("user_id", userId)
     .order("received_at", { ascending: false });
 
   if (error) throw error;
@@ -310,6 +334,8 @@ export async function getUnprocessedEmails() {
 // =====================================================
 
 export async function getRiskAnalysis() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("risk_analysis")
     .select(
@@ -322,6 +348,7 @@ export async function getRiskAnalysis() {
       )
     `
     )
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -329,6 +356,8 @@ export async function getRiskAnalysis() {
 }
 
 export async function getHighRiskAlerts() {
+  const userId = await getUserId();
+  
   const { data, error } = await supabase
     .from("risk_analysis")
     .select(
@@ -343,6 +372,7 @@ export async function getHighRiskAlerts() {
     )
     .eq("risk_level", "High")
     .eq("human_reviewed", false)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -470,9 +500,9 @@ export async function getAuditLogs(riskAnalysisId?: string) {
 // =====================================================
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  await getUserId(); // Ensures user is authenticated
-
-  // Get counts in parallel
+  const userId = await getUserId();
+  
+  // Get counts in parallel - all filtered by user_id
   const [
     suppliersResult,
     ordersResult,
@@ -481,20 +511,29 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     mediumRiskResult,
     lowStockResult,
   ] = await Promise.all([
-    supabase.from("suppliers").select("id", { count: "exact", head: true }),
-    supabase.from("orders").select("id", { count: "exact", head: true }),
+    supabase
+      .from("suppliers")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
     supabase
       .from("orders")
       .select("id", { count: "exact", head: true })
-      .eq("status", "pending"),
+      .eq("user_id", userId),
+    supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending")
+      .eq("user_id", userId),
     supabase
       .from("risk_analysis")
       .select("id", { count: "exact", head: true })
-      .eq("risk_level", "High"),
+      .eq("risk_level", "High")
+      .eq("user_id", userId),
     supabase
       .from("risk_analysis")
       .select("id", { count: "exact", head: true })
-      .eq("risk_level", "Medium"),
+      .eq("risk_level", "Medium")
+      .eq("user_id", userId),
     getLowStockItems(),
   ]);
 

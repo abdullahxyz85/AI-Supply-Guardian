@@ -109,8 +109,8 @@ export function SupplierModal({
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-red-500/10 rounded-lg group"
-            >
+              aria-label="Close modal"
+              className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-red-500/10 rounded-lg group">
               <X className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-90 transition-transform duration-300" />
             </button>
           </div>
