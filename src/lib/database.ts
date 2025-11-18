@@ -16,6 +16,23 @@ import type {
 } from "../types/database";
 
 // =====================================================
+// UTILITY
+// =====================================================
+
+async function getUserId() {
+  // Prefer the stored user ID from Google Auth
+  const storedUserId = localStorage.getItem('user_id');
+  if (storedUserId) {
+    return storedUserId;
+  }
+
+  // Fallback to Supabase session
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("User not authenticated");
+  return user.id;
+}
+
+// =====================================================
 // SUPPLIERS
 // =====================================================
 
@@ -41,14 +58,13 @@ export async function getSupplierById(id: string) {
 }
 
 export async function createSupplier(supplier: SupplierInput) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  const userId = await getUserId();
 
   const { data, error } = await supabase
     .from("suppliers")
     .insert({
       ...supplier,
-      user_id: userData.user.id,
+      user_id: userId,
     })
     .select()
     .single();
@@ -115,14 +131,13 @@ export async function getLowStockItems() {
 }
 
 export async function createInventoryItem(item: InventoryInput) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  const userId = await getUserId();
 
   const { data, error } = await supabase
     .from("inventory")
     .insert({
       ...item,
-      user_id: userData.user.id,
+      user_id: userId,
     })
     .select()
     .single();
@@ -199,8 +214,7 @@ export async function getPendingOrders() {
 }
 
 export async function createOrder(order: OrderInput) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  const userId = await getUserId();
 
   // Calculate total price
   const totalPrice = order.quantity * order.unit_price;
@@ -210,7 +224,7 @@ export async function createOrder(order: OrderInput) {
     .insert({
       ...order,
       total_price: totalPrice,
-      user_id: userData.user.id,
+      user_id: userId,
     })
     .select()
     .single();
@@ -340,8 +354,7 @@ export async function updateRiskAnalysis(
     reviewed_at?: string;
   }
 ) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  await getUserId(); // Ensures user is authenticated
 
   // Get original data for audit log
   const { data: original } = await supabase
@@ -415,14 +428,13 @@ export async function createAuditLog(log: {
   new_value?: string;
   reason?: string;
 }) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  const userId = await getUserId();
 
   const { data, error } = await supabase
     .from("audit_log")
     .insert({
       ...log,
-      user_id: userData.user.id,
+      user_id: userId,
     })
     .select()
     .single();
@@ -452,8 +464,7 @@ export async function getAuditLogs(riskAnalysisId?: string) {
 // =====================================================
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) throw new Error("User not authenticated");
+  await getUserId(); // Ensures user is authenticated
 
   // Get counts in parallel
   const [
