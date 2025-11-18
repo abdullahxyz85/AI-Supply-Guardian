@@ -96,11 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // Case 2: No Supabase session, check for a pending Google session in local storage
+        // Case 2: No Supabase session, check for a Google OAuth session in local storage
         const storedUserId = localStorage.getItem('user_id');
         const pendingGoogleAuth = localStorage.getItem('pending_google_auth');
         
-        if (storedUserId && pendingGoogleAuth === 'true') {
+        // Check for Google OAuth user (either pending auth or returning user on refresh)
+        if (storedUserId) {
           const initialized = await authTokenManager.initialize(storedUserId);
           if (initialized) {
             syncTriggered.current = true; // Close the gate immediately.
@@ -109,8 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const googleAccessToken = authTokenManager.getAccessToken();
             const googleRefreshToken = authTokenManager.getRefreshToken();
 
-            // Create or update user in Supabase auth.users table
-            if (googleUser) {
+            // Create or update user in Supabase auth.users table (only on first login)
+            if (googleUser && pendingGoogleAuth === 'true') {
               console.log('Creating Supabase user for Google OAuth user...');
               await createSupabaseUserFromGoogle({
                 user_id: googleUser.user_id,
@@ -122,15 +123,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // If user was created successfully, the Supabase UUID is now stored
               // If user already existed, we fetched and stored their UUID
               console.log('✅ Supabase user setup complete');
+              
+              // Clear the pending flag after first successful setup
+              localStorage.removeItem('pending_google_auth');
             }
 
             setUser(googleUser);
             setAccessToken(googleAccessToken);
             setRefreshToken(googleRefreshToken);
             setAuthProvider('google');
-            
-            // Clear the pending flag
-            localStorage.removeItem('pending_google_auth');
             
             await syncUserToSupabase(googleUser, googleAccessToken, googleRefreshToken);
             setLoading(false);
@@ -151,7 +152,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const googleSignIn = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/auth/google/login?prompt=consent`);
+      // Don't force consent screen for returning users
+      // Google will automatically show account picker
+      const response = await fetch(`${BACKEND_URL}/api/auth/google/login`);
       if (!response.ok) {
         throw new Error('Failed to initiate login');
       }

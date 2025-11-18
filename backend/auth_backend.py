@@ -189,10 +189,14 @@ async def root():
     }
 
 @app.get("/api/auth/google/login")
-async def google_login(prompt: Optional[str] = "consent"):
+async def google_login(prompt: Optional[str] = None):
     """
     Initiate Google OAuth2 login flow
     Returns the authorization URL for the frontend to redirect to
+    
+    prompt options:
+    - None or 'select_account': Shows account picker (default for returning users)
+    - 'consent': Forces consent screen (use for first-time login)
     """
     state = generate_state()
     
@@ -218,9 +222,13 @@ async def google_login(prompt: Optional[str] = "consent"):
             "https://www.googleapis.com/auth/calendar.events"
         ]),
         "access_type": "offline",
-        "prompt": prompt, # Use the passed prompt value
         "state": state
     }
+    
+    # Only add prompt parameter if explicitly specified
+    # If None, Google will use default behavior (select_account)
+    if prompt:
+        params["prompt"] = prompt
     
     auth_url = f"{GOOGLE_AUTH_URL}?{urllib.parse.urlencode(params)}"
     

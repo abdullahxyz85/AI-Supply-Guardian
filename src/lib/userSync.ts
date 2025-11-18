@@ -17,6 +17,21 @@ export async function createSupabaseUserFromGoogle(
   try {
     console.log('🔄 Creating/signing in Google user to Supabase:', googleUser.email);
 
+    // First, check if user already exists in our mapping table
+    const { data: existingMapping, error: mappingError } = await supabase
+      .from('google_oauth_tokens')
+      .select('user_id')
+      .eq('google_user_id', googleUser.user_id)
+      .single();
+    
+    if (!mappingError && existingMapping?.user_id) {
+      // User already exists and is mapped
+      localStorage.setItem('supabase_user_id', existingMapping.user_id);
+      console.log('✅ User already exists, retrieved UUID:', existingMapping.user_id);
+      return { user: null, session: null };
+    }
+
+    // User doesn't exist in mapping, try to sign them up
     // Generate a secure random password (user won't need it for Google OAuth)
     const randomPassword = crypto.randomUUID() + crypto.randomUUID();
     
