@@ -13,8 +13,7 @@ import {
   Calendar,
   Sparkles,
 } from "lucide-react";
-import { supabase } from "../../lib/supabase";
-import { subscribeToAIAnalysisResults } from "../../lib/database";
+import { getAIAnalysisResults, subscribeToAIAnalysisResults } from "../../lib/database";
 
 export function EmailList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +28,7 @@ export function EmailList() {
     
     // Subscribe to real-time updates
     const subscription = subscribeToAIAnalysisResults((payload: any) => {
-      console.log('✨ Real-time AI Analysis update:', payload);
+
       
       if (payload.eventType === 'INSERT') {
         setAiAnalysisResults(prev => [payload.new, ...prev]);
@@ -64,12 +63,7 @@ export function EmailList() {
   const fetchAiAnalysisResults = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("ai_analysis_results")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await getAIAnalysisResults();
       setAiAnalysisResults(data || []);
       setNewResultsCount(0);
     } catch (error) {

@@ -31,7 +31,7 @@ class AuthTokenManager {
         const sessionResponse = await fetch(`${BACKEND_URL}/api/auth/user/${userId}`);
         if (sessionResponse.ok) {
           const session = await sessionResponse.json();
-          console.log('Session data from backend:', session); // Log the session data
+          // //console.log('Session data from backend:', session); // Log the session data
           this.accessToken = session.access_token;
           this.refreshToken = session.refresh_token;
           this.expiresAt = new Date(session.expires_at);
@@ -131,7 +131,7 @@ class AuthTokenManager {
           };
         }
         this.scheduleTokenRefresh();
-        console.log('✅ Token refreshed successfully');
+        // //console.log('✅ Token refreshed successfully');
         return true;
       }
       return false;
@@ -152,10 +152,10 @@ class AuthTokenManager {
     const expiresIn = this.expiresAt.getTime() - now.getTime();
     const refreshIn = Math.max(0, expiresIn - 5 * 60 * 1000);
 
-    console.log(`Token refresh scheduled in ${Math.round(refreshIn / 1000 / 60)} minutes`);
+    // //console.log(`Token refresh scheduled in ${Math.round(refreshIn / 1000 / 60)} minutes`);
 
     this.refreshTimer = setTimeout(() => {
-      console.log('Auto-refreshing token...');
+      // //console.log('Auto-refreshing token...');
       this.refreshAccessToken();
     }, refreshIn);
   }

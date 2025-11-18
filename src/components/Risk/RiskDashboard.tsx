@@ -31,7 +31,7 @@ export function RiskDashboard() {
     
     // Subscribe to real-time updates for AI analysis results
     const subscription = subscribeToAIAnalysisResults((payload: any) => {
-      console.log('✨ New AI Analysis received:', payload);
+
       
       if (payload.eventType === 'INSERT') {
         setAiAnalyses(prev => [payload.new, ...prev]);

@@ -15,7 +15,7 @@ export async function createSupabaseUserFromGoogle(
   googleUser: { user_id: string; email: string; name: string; picture?: string }
 ) {
   try {
-    console.log('🔄 Creating/signing in Google user to Supabase:', googleUser.email);
+    //console.log('🔄 Creating/signing in Google user to Supabase:', googleUser.email);
 
     // First, check if user already exists in our mapping table
     const { data: existingMapping, error: mappingError } = await supabase
@@ -27,7 +27,7 @@ export async function createSupabaseUserFromGoogle(
     if (!mappingError && existingMapping?.user_id) {
       // User already exists and is mapped
       localStorage.setItem('supabase_user_id', existingMapping.user_id);
-      console.log('✅ User already exists, retrieved UUID:', existingMapping.user_id);
+      //console.log('✅ User already exists, retrieved UUID:', existingMapping.user_id);
       return { user: null, session: null };
     }
 
@@ -54,7 +54,7 @@ export async function createSupabaseUserFromGoogle(
       // If user already exists, that's actually fine for our use case
       if (signUpError.message.includes('already registered') || 
           signUpError.message.includes('User already registered')) {
-        console.log('ℹ️ User already exists in Supabase:', googleUser.email);
+        //console.log('ℹ️ User already exists in Supabase:', googleUser.email);
         
         // User exists - fetch their Supabase UUID from google_oauth_tokens table
         const { data: tokenData, error: tokenError } = await supabase
@@ -65,19 +65,19 @@ export async function createSupabaseUserFromGoogle(
         
         if (!tokenError && tokenData?.user_id) {
           localStorage.setItem('supabase_user_id', tokenData.user_id);
-          console.log('✅ Retrieved Supabase user ID from mapping table:', tokenData.user_id);
+          //console.log('✅ Retrieved Supabase user ID from mapping table:', tokenData.user_id);
           return { user: null, session: null };
         }
         
         // If not found in mapping table, use RPC function to get user ID by email
-        console.log('🔍 Mapping not found, querying auth.users by email...');
+        //console.log('🔍 Mapping not found, querying auth.users by email...');
         
         const { data: userId, error: rpcError } = await supabase
           .rpc('get_user_id_by_email', { user_email: googleUser.email });
         
         if (!rpcError && userId) {
           localStorage.setItem('supabase_user_id', userId);
-          console.log('✅ Retrieved Supabase user ID from auth.users:', userId);
+          //console.log('✅ Retrieved Supabase user ID from auth.users:', userId);
           
           // Tokens are stored by backend, just store the user_id mapping
           await supabase.from('google_oauth_tokens').update({
@@ -98,8 +98,8 @@ export async function createSupabaseUserFromGoogle(
     }
 
     if (signUpData.user) {
-      console.log('✅ User created in Supabase auth.users:', signUpData.user.id);
-      console.log('📧 Email:', signUpData.user.email);
+      //console.log('✅ User created in Supabase auth.users:', signUpData.user.id);
+      //console.log('📧 Email:', signUpData.user.email);
       
       // Store the Supabase UUID for future database operations
       localStorage.setItem('supabase_user_id', signUpData.user.id);
@@ -170,9 +170,9 @@ export async function syncUserToSupabase(
     return;
   }
   
-  console.log("Attempting to sync user to Supabase via n8n...");
-  console.log("Webhook URL:", n8nWebhookUrl);
-  console.log("Payload:", JSON.stringify(userDataPayload, null, 2));
+  //console.log("Attempting to sync user to Supabase via n8n...");
+  //console.log("Webhook URL:", n8nWebhookUrl);
+  //console.log("Payload:", JSON.stringify(userDataPayload, null, 2));
 
   try {
     const headers = {
@@ -180,7 +180,7 @@ export async function syncUserToSupabase(
       'Content-Type': 'application/json',
     };
 
-    console.log("Request Headers:", JSON.stringify(headers, null, 2));
+    //console.log("Request Headers:", JSON.stringify(headers, null, 2));
 
     const response = await fetch(n8nWebhookUrl, {
       method: 'POST',
@@ -192,7 +192,7 @@ export async function syncUserToSupabase(
       const errorText = await response.text();
       console.error(`Error syncing user to Supabase via n8n: ${response.status} ${errorText}`);
     } else {
-      console.log("User sync successful!");
+      //console.log("User sync successful!");
     }
   } catch (error) {
     console.error("An unexpected error occurred during user sync:", error);

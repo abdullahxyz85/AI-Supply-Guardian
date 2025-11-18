@@ -21,10 +21,10 @@ export const auth = getAuth(app);
 // Set persistence to LOCAL (survives page refresh and browser restart)
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log('✅ Firebase auth persistence set to LOCAL');
+    // //console.log('✅ Firebase auth persistence set to LOCAL');
   })
   .catch((error) => {
-    console.error('❌ Error setting persistence:', error);
+    // console.error('❌ Error setting persistence:', error);
   });
 
 // Initialize Google Auth Provider with required scopes
@@ -49,9 +49,9 @@ googleProvider.setCustomParameters({
 let analytics = null;
 try {
   analytics = getAnalytics(app);
-  console.log('✅ Firebase Analytics initialized');
+  // //console.log('✅ Firebase Analytics initialized');
 } catch (error) {
-  console.log('ℹ️ Firebase Analytics not available');
+  // //console.log('ℹ️ Firebase Analytics not available');
 }
 
 export { analytics };

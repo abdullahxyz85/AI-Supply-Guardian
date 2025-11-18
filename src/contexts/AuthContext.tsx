@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             // Create or update user in Supabase auth.users table (only on first login)
             if (googleUser && pendingGoogleAuth === 'true') {
-              console.log('Creating Supabase user for Google OAuth user...');
+
               await createSupabaseUserFromGoogle({
                 user_id: googleUser.user_id,
                 email: googleUser.email,
@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               
               // If user was created successfully, the Supabase UUID is now stored
               // If user already existed, we fetched and stored their UUID
-              console.log('✅ Supabase user setup complete');
+
               
               // Clear the pending flag after first successful setup
               localStorage.removeItem('pending_google_auth');
