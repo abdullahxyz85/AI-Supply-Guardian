@@ -41,7 +41,7 @@ We designed our entire agent system using Opus AI's workflow builder. The platfo
 
 **Our Opus Workflow Architecture:**
 
-![Opus Workflow](docs/opus-workflow.png)
+<img width="1617" height="384" alt="Screenshot 2025-11-18 132109" src="https://github.com/user-attachments/assets/4d71aa08-dcb1-4598-abb3-d63aa8450a52" />
 
 The workflow handles:
 
