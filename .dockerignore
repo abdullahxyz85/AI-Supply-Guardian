@@ -90,7 +90,7 @@ temp/
 *.sublime-project
 *.sublime-workspace
 
-# Package manager locks (keep requirements.txt and package.json)
-package-lock.json
+# Package manager locks - keep package-lock.json for npm ci
+# package-lock.json  # KEEP THIS FILE
 yarn.lock
 pnpm-lock.yaml

@@ -1,5 +1,11 @@
 # .htaccess for cPanel Apache Server
-# This file handles React Router and proxies API requests to backend
+# This file handles React Router SPA routing
+
+# Disable directory browsing
+Options -Indexes
+
+# Set index.html as the default document
+DirectoryIndex index.html
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -9,16 +15,10 @@
     # RewriteCond %{HTTPS} off
     # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Proxy API requests to backend Docker container
-    # Replace YOUR_DOMAIN with your actual domain
-    RewriteCond %{REQUEST_URI} ^/api/ [NC]
-    RewriteRule ^api/(.*)$ http://localhost:8050/api/$1 [P,L]
-
     # Handle React Router - serve index.html for all non-file requests
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} !^/api/
-    RewriteRule ^ index.html [L]
+    RewriteRule ^ /index.html [L]
 </IfModule>
 
 # Security Headers
@@ -57,13 +57,5 @@
 
 # Protect sensitive files
 <FilesMatch "\.(env|json|yml|yaml)$">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
-
-# Enable proxy modules (required for API proxying)
-# Note: These might need to be enabled in cPanel's Apache configuration
-<IfModule mod_proxy.c>
-    ProxyPreserveHost On
-    ProxyTimeout 300
-</IfModule>
