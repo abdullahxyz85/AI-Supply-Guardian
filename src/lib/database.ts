@@ -20,16 +20,21 @@ import type {
 // =====================================================
 
 async function getUserId() {
-  // Prefer the stored user ID from Google Auth
-  const storedUserId = localStorage.getItem('user_id');
-  if (storedUserId) {
-    return storedUserId;
+  // First, check if we have a Supabase session (for email/password users)
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    // User is authenticated via Supabase (email/password or already linked Google account)
+    return user.id;
   }
 
-  // Fallback to Supabase session
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
-  return user.id;
+  // For Google OAuth users, we need to get the Supabase UUID from localStorage
+  // This is stored when the user is created in Supabase
+  const supabaseUserId = localStorage.getItem('supabase_user_id');
+  if (supabaseUserId) {
+    return supabaseUserId;
+  }
+
+  throw new Error("User not authenticated");
 }
 
 // =====================================================

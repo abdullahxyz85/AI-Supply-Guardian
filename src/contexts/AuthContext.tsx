@@ -118,6 +118,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: googleUser.name,
                 picture: googleUser.picture,
               });
+              
+              // If user was created successfully, the Supabase UUID is now stored
+              // If user already existed, we fetched and stored their UUID
+              console.log('✅ Supabase user setup complete');
             }
 
             setUser(googleUser);
