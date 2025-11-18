@@ -8,14 +8,16 @@ import {
   Loader2,
   Search,
   FileText,
+  Sparkles,
 } from "lucide-react";
-import { getRiskAnalysis } from "../../lib/database";
-import type { RiskAnalysis } from "../../types/database";
+import { getRiskAnalysis, getAIAnalysisResults, subscribeToAIAnalysisResults } from "../../lib/database";
+import type { RiskAnalysis, AIAnalysisResult } from "../../types/database";
 import { ReviewPanel } from "./ReviewPanel";
 import { AuditLogViewer } from "./AuditLogViewer";
 
 export function RiskDashboard() {
   const [riskAnalyses, setRiskAnalyses] = useState<RiskAnalysis[]>([]);
+  const [aiAnalyses, setAiAnalyses] = useState<AIAnalysisResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState<string>("all");
@@ -26,12 +28,35 @@ export function RiskDashboard() {
 
   useEffect(() => {
     loadRiskData();
+    
+    // Subscribe to real-time updates for AI analysis results
+    const subscription = subscribeToAIAnalysisResults((payload: any) => {
+      console.log('✨ New AI Analysis received:', payload);
+      
+      if (payload.eventType === 'INSERT') {
+        setAiAnalyses(prev => [payload.new, ...prev]);
+      } else if (payload.eventType === 'UPDATE') {
+        setAiAnalyses(prev => prev.map(item => 
+          item.id === payload.new.id ? payload.new : item
+        ));
+      } else if (payload.eventType === 'DELETE') {
+        setAiAnalyses(prev => prev.filter(item => item.id !== payload.old.id));
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const loadRiskData = async () => {
     try {
-      const data = await getRiskAnalysis();
-      setRiskAnalyses(data);
+      const [riskData, aiData] = await Promise.all([
+        getRiskAnalysis(),
+        getAIAnalysisResults()
+      ]);
+      setRiskAnalyses(riskData);
+      setAiAnalyses(aiData || []);
     } catch (error) {
       console.error("Error loading risk analysis:", error);
     } finally {
@@ -263,6 +288,75 @@ export function RiskDashboard() {
         </div>
       </div>
 
+      {/* AI Analysis Results Section */}
+      {aiAnalyses.length > 0 && (
+        <div className="bg-gradient-to-br from-purple-500/5 via-indigo-500/5 to-blue-500/5 rounded-xl p-6 border border-purple-500/20">
+          <div className="flex items-center space-x-3 mb-4">
+            <Sparkles className="w-6 h-6 text-purple-400" />
+            <h3 className="text-xl font-bold text-white">Latest AI Analysis Results</h3>
+            <span className="px-3 py-1 bg-purple-500/20 text-purple-300 text-sm rounded-full">
+              {aiAnalyses.length} {aiAnalyses.length === 1 ? 'result' : 'results'}
+            </span>
+          </div>
+          
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {aiAnalyses.slice(0, 10).map((analysis) => (
+              <div
+                key={analysis.id}
+                className="bg-elevated/50 rounded-lg p-4 border border-gray-700/50 hover:border-purple-500/30 transition-all"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                      analysis.risk_level === 'High' ? 'bg-red-500/20 text-red-400' :
+                      analysis.risk_level === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-green-500/20 text-green-400'
+                    }`}>
+                      {analysis.risk_level || 'Unknown'}
+                    </span>
+                    <span className="text-sm text-gray-400">
+                      {analysis.issue_type || 'No Risk Detected'}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {new Date(analysis.created_at).toLocaleString()}
+                  </span>
+                </div>
+                
+                {analysis.item_name && (
+                  <p className="text-sm text-gray-300 mb-1">
+                    <span className="text-gray-500">Item:</span> {analysis.item_name}
+                  </p>
+                )}
+                
+                {analysis.reason && (
+                  <p className="text-sm text-gray-400 mb-2">{analysis.reason}</p>
+                )}
+                
+                {analysis.recommendation && (
+                  <p className="text-sm text-indigo-300">
+                    <span className="font-semibold">Recommendation:</span> {analysis.recommendation}
+                  </p>
+                )}
+                
+                {analysis.confidence !== null && (
+                  <div className="mt-2 flex items-center space-x-2">
+                    <span className="text-xs text-gray-500">Confidence:</span>
+                    <div className="flex-1 bg-gray-700 rounded-full h-2 max-w-xs">
+                      <div
+                        className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded-full transition-all"
+                        style={{ width: `${(analysis.confidence || 0) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-400">{((analysis.confidence || 0) * 100).toFixed(0)}%</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Search */}
@@ -281,6 +375,7 @@ export function RiskDashboard() {
         <select
           value={riskFilter}
           onChange={(e) => setRiskFilter(e.target.value)}
+          aria-label="Filter by risk level"
           className="px-4 py-3 bg-elevated border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-white"
         >
           <option value="all">All Risk Levels</option>
@@ -293,6 +388,7 @@ export function RiskDashboard() {
         <select
           value={reviewFilter}
           onChange={(e) => setReviewFilter(e.target.value)}
+          aria-label="Filter by review status"
           className="px-4 py-3 bg-elevated border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-white"
         >
           <option value="all">All Reviews</option>

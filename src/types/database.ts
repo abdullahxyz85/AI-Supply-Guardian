@@ -113,6 +113,30 @@ export interface AuditLog {
   created_at: string;
 }
 
+export interface AIAnalysisResult {
+  id: string;
+  issue_type: string | null;
+  order_id: string | null;
+  item_name: string | null;
+  quantity: number | null;
+  old_delivery_date: string | null;
+  new_delivery_date: string | null;
+  delay_days: number | null;
+  cancellation_flag: boolean;
+  price_change: number | null;
+  tracking_number: string | null;
+  risk_level: "Low" | "Medium" | "High" | null;
+  reason: string | null;
+  recommendation: string | null;
+  confidence: number | null;
+  additional_notes: string | null;
+  raw_output: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+  email_id: string | null;
+  user_id?: string;
+}
+
 // Input types for forms
 export interface SupplierInput {
   name: string;

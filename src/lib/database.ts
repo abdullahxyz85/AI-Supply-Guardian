@@ -583,3 +583,59 @@ export function subscribeToRiskAnalysis(callback: (payload: unknown) => void) {
     )
     .subscribe();
 }
+
+// =====================================================
+// AI ANALYSIS RESULTS
+// =====================================================
+
+export async function getAIAnalysisResults() {
+  const userId = await getUserId();
+  
+  const { data, error } = await supabase
+    .from("ai_analysis_results")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getAIAnalysisByEmailId(emailId: string) {
+  const userId = await getUserId();
+  
+  const { data, error } = await supabase
+    .from("ai_analysis_results")
+    .select("*")
+    .eq("email_id", emailId)
+    .eq("user_id", userId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+  return data;
+}
+
+export async function getHighRiskAIAnalysis() {
+  const userId = await getUserId();
+  
+  const { data, error } = await supabase
+    .from("ai_analysis_results")
+    .select("*")
+    .eq("risk_level", "High")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export function subscribeToAIAnalysisResults(callback: (payload: unknown) => void) {
+  return supabase
+    .channel("ai_analysis_results_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "ai_analysis_results" },
+      callback
+    )
+    .subscribe();
+}

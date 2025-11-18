@@ -11,18 +11,54 @@ import {
   TrendingUp,
   Package,
   Calendar,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import { subscribeToAIAnalysisResults } from "../../lib/database";
 
 export function EmailList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [aiAnalysisResults, setAiAnalysisResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newResultsCount, setNewResultsCount] = useState(0);
 
-  // Fetch AI analysis results from Supabase
+  // Fetch AI analysis results from Supabase and subscribe to real-time updates
   useEffect(() => {
     fetchAiAnalysisResults();
+    
+    // Subscribe to real-time updates
+    const subscription = subscribeToAIAnalysisResults((payload: any) => {
+      console.log('✨ Real-time AI Analysis update:', payload);
+      
+      if (payload.eventType === 'INSERT') {
+        setAiAnalysisResults(prev => [payload.new, ...prev]);
+        setNewResultsCount(prev => prev + 1);
+        
+        // Show notification
+        if (Notification.permission === 'granted') {
+          new Notification('New AI Analysis Result', {
+            body: `Risk Level: ${payload.new.risk_level} - ${payload.new.issue_type || 'No risk detected'}`,
+            icon: '/favicon.ico'
+          });
+        }
+      } else if (payload.eventType === 'UPDATE') {
+        setAiAnalysisResults(prev => prev.map(item => 
+          item.id === payload.new.id ? payload.new : item
+        ));
+      } else if (payload.eventType === 'DELETE') {
+        setAiAnalysisResults(prev => prev.filter(item => item.id !== payload.old.id));
+      }
+    });
+
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchAiAnalysisResults = async () => {
@@ -35,6 +71,7 @@ export function EmailList() {
 
       if (error) throw error;
       setAiAnalysisResults(data || []);
+      setNewResultsCount(0);
     } catch (error) {
       console.error("Error fetching AI analysis results:", error);
     } finally {
@@ -150,11 +187,21 @@ export function EmailList() {
 
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-white">Email Tracking</h2>
-          <p className="text-gray-400 mt-1">
-            Monitor supplier communications and AI extraction status
-          </p>
+        <div className="flex items-center space-x-4">
+          <div>
+            <h2 className="text-3xl font-bold text-white">Email Tracking</h2>
+            <p className="text-gray-400 mt-1">
+              Monitor supplier communications and AI extraction status
+            </p>
+          </div>
+          {newResultsCount > 0 && (
+            <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 rounded-lg border border-purple-500/30 animate-pulse">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              <span className="text-purple-300 font-semibold">
+                {newResultsCount} new {newResultsCount === 1 ? 'result' : 'results'}
+              </span>
+            </div>
+          )}
         </div>
         <button
           className="flex items-center space-x-2 bg-gradient-to-r gradient-button-bg text-white px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 opacity-50 cursor-not-allowed"
@@ -229,6 +276,7 @@ export function EmailList() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="Filter by risk level"
           className="px-4 py-3 bg-elevated border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition text-white"
         >
           <option value="all">All Risk Levels</option>
