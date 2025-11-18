@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  # Backend Service (FastAPI)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ai-supply-guardian-backend
+    restart: unless-stopped
+    ports:
+      - "8050:8050"
+    environment:
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - N8N_WEBHOOK_KEY=${N8N_WEBHOOK_KEY}
+    env_file:
+      - ./backend/.env
+    networks:
+      - ai-supply-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8050/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Frontend Service (React + Vite)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ai-supply-guardian-frontend
+    restart: unless-stopped
+    ports:
+      - "3032:80"
+    depends_on:
+      - backend
+    networks:
+      - ai-supply-network
+    healthcheck:
+      test:
+        ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  ai-supply-network:
+    driver: bridge
+
+volumes:
+  backend-data:
+    driver: local
