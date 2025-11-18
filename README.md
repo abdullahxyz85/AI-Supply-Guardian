@@ -8,7 +8,7 @@ Managing supplier communications is painful. Hundreds of emails about delays, pr
 
 **Our solution:** AI agents that read your supplier emails, extract critical information, and flag potential issues before they become disasters.
 
-## 🎯 Core Features
+## Core Features
 
 - **Email Intelligence**: Connects to your Gmail and automatically processes supplier communications
 - **Smart Data Extraction**: AI agents pull out order details, delivery dates, prices, and tracking numbers
@@ -35,20 +35,20 @@ We built this with some solid tools:
 
 This project was built specifically using the required hackathon technologies:
 
-### 🎯 Opus Workflow
+### Opus Workflow
 
 We designed our entire agent system using Opus workflow builder. The platform helped us orchestrate complex multi-agent interactions for email processing and risk analysis.
 
 **Our Opus Workflow Architecture:**
 
-- **🤖 AI Email Processing** - Automatically reads and understands supplier communications using Google Gemini API
-- **📊 Risk Detection** - Identifies delays, price changes, and quality issues with confidence scores
-- **📦 Inventory Management** - Track stock levels with intelligent alerts
-- **🚚 Order Tracking** - Monitor all orders and their status in real-time
-- **👥 Supplier Analytics** - Performance tracking and reliability scoring
-- **🎨 Dual Themes** - Switch between Purple and ArcFi-Orange dark themes
+- **AI Email Processing** - Automatically reads and understands supplier communications using Google Gemini API
+- **Risk Detection** - Identifies delays, price changes, and quality issues with confidence scores
+- **Inventory Management** - Track stock levels with intelligent alerts
+- **Order Tracking** - Monitor all orders and their status in real-time
+- **Supplier Analytics** - Performance tracking and reliability scoring
+- **Dual Themes** - Switch between Purple and ArcFi-Orange dark themes
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 - **Frontend:** React + TypeScript + Vite + Tailwind CSS
 - **Backend:** Python + Supabase (PostgreSQL)
@@ -59,22 +59,22 @@ We designed our entire agent system using Opus workflow builder. The platform he
 
 ---
 
-## 🤖 AI Agent Architecture
+## AI Agent Architecture
 
 Our intelligent system uses a multi-agent workflow orchestrated through **Opus AI**, powered by **Google Gemini API** for natural language processing.
 
-### 📋 Opus AI Workflow Design
+### Opus AI Workflow Design
 
 <img width="1617" height="384" alt="Screenshot 2025-11-18 132109" src="https://github.com/user-attachments/assets/4d71aa08-dcb1-4598-abb3-d63aa8450a52" />
 
 ```mermaid
 graph LR
-    A[📧 Workflow Input<br/>Gmail Integration] --> B[🔍 Extract Risk Events<br/>Gemini API]
-    B --> C[⚖️ Review & Analyze<br/>Validation Agent]
-    C --> D[📊 Analyze Supplier<br/>Performance]
-    D --> E[💡 Generate<br/>Recommendations]
-    E --> F[🔔 Notify Stakeholders]
-    E --> G[💾 Update Database<br/>Supabase]
+    A[ Workflow Input<br/>Gmail Integration] --> B[🔍 Extract Risk Events<br/>Gemini API]
+    B --> C[Review & Analyze<br/>Validation Agent]
+    C --> D[Analyze Supplier<br/>Performance]
+    D --> E[Generate<br/>Recommendations]
+    E --> F[Notify Stakeholders]
+    E --> G[Update Database<br/>Supabase]
 
     style A fill:#4CAF50
     style B fill:#2196F3
@@ -85,15 +85,15 @@ graph LR
     style G fill:#795548
 ```
 
-### 🔄 Agent Flow Breakdown
+### Agent Flow Breakdown
 
 | Agent                        | Technology                   | Purpose                                                       |
 | ---------------------------- | ---------------------------- | ------------------------------------------------------------- |
-| **📧 Email Ingestion**       | Gmail API + OAuth            | Monitors inbox for supplier communications                    |
-| **🔍 Data Extraction**       | Google Gemini API            | Extracts structured data (order IDs, dates, prices, tracking) |
-| **⚖️ Risk Analysis**         | Gemini API + Historical Data | Identifies delays, price changes, quality issues              |
-| **💡 Recommendation Engine** | Gemini API                   | Generates actionable insights with confidence scores          |
-| **💾 Database Sync**         | Supabase Realtime            | Updates dashboard instantly                                   |
+| **Email Ingestion**       | Gmail API + OAuth            | Monitors inbox for supplier communications                    |
+| **Data Extraction**       | Google Gemini API            | Extracts structured data (order IDs, dates, prices, tracking) |
+| **Risk Analysis**         | Gemini API + Historical Data | Identifies delays, price changes, quality issues              |
+| **Recommendation Engine** | Gemini API                   | Generates actionable insights with confidence scores          |
+| **Database Sync**         | Supabase Realtime            | Updates dashboard instantly                                   |
 
 ### ⚡ n8n Production Implementation
 
@@ -103,15 +103,15 @@ While our architecture is designed in Opus AI, we use n8n for production-ready a
 
 **Key Workflows:**
 
-- 📬 Email Processing Pipeline
-- 🧠 AI Data Extraction (Gemini API)
-- ⚠️ Risk Analysis & Scoring
-- 🔄 Real-time Database Updates
-- 📢 Stakeholder Notifications
+- Email Processing Pipeline
+- AI Data Extraction (Gemini API)
+- Risk Analysis & Scoring
+- Real-time Database Updates
+- Stakeholder Notifications
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -148,7 +148,7 @@ Visit `http://localhost:5173` 🎉
 
 ---
 
-## 📊 Database Schema
+## Database Schema
 
 | Table                 | Purpose                                  |
 | --------------------- | ---------------------------------------- |
@@ -164,7 +164,7 @@ Visit `http://localhost:5173` 🎉
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AI-Supply-Guardian/
@@ -185,7 +185,7 @@ AI-Supply-Guardian/
 
 ---
 
-## 🎯 Why This Tech Stack?
+## Why This Tech Stack?
 
 | Technology             | Reason                                                                     |
 | ---------------------- | -------------------------------------------------------------------------- |
@@ -198,7 +198,7 @@ AI-Supply-Guardian/
 
 ---
 
-## 📜 License
+## License
 
 MIT - Build whatever you want with it!
 
