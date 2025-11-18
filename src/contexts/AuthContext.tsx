@@ -9,7 +9,7 @@ import {
 import { User as SupabaseUser, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 import authTokenManager from "../lib/authTokenManager";
-import { syncUserToSupabase } from "../lib/userSync";
+import { syncUserToSupabase, createSupabaseUserFromGoogle } from "../lib/userSync";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8050';
 
@@ -57,14 +57,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // 1. Handle the redirect from Google OAuth. This runs only once on initial load.
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('auth') === 'success' && urlParams.get('user_id')) {
-      const userId = urlParams.get('user_id')!;
-      // Store the user ID so we can pick it up in the listener.
-      localStorage.setItem('user_id', userId);
-      // Clean the URL.
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
+    const handleGoogleCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('auth') === 'success' && urlParams.get('user_id')) {
+        const userId = urlParams.get('user_id')!;
+        // Store the user ID so we can pick it up in the listener.
+        localStorage.setItem('user_id', userId);
+        localStorage.setItem('pending_google_auth', 'true');
+        // Clean the URL.
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
+    
+    handleGoogleCallback();
 
     // 2. Set up a single listener for all authentication events.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -93,7 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Case 2: No Supabase session, check for a pending Google session in local storage
         const storedUserId = localStorage.getItem('user_id');
-        if (storedUserId) {
+        const pendingGoogleAuth = localStorage.getItem('pending_google_auth');
+        
+        if (storedUserId && pendingGoogleAuth === 'true') {
           const initialized = await authTokenManager.initialize(storedUserId);
           if (initialized) {
             syncTriggered.current = true; // Close the gate immediately.
@@ -102,10 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const googleAccessToken = authTokenManager.getAccessToken();
             const googleRefreshToken = authTokenManager.getRefreshToken();
 
+            // Create or update user in Supabase auth.users table
+            if (googleUser) {
+              console.log('Creating Supabase user for Google OAuth user...');
+              await createSupabaseUserFromGoogle({
+                user_id: googleUser.user_id,
+                email: googleUser.email,
+                name: googleUser.name,
+                picture: googleUser.picture,
+              });
+            }
+
             setUser(googleUser);
             setAccessToken(googleAccessToken);
             setRefreshToken(googleRefreshToken);
             setAuthProvider('google');
+            
+            // Clear the pending flag
+            localStorage.removeItem('pending_google_auth');
             
             await syncUserToSupabase(googleUser, googleAccessToken, googleRefreshToken);
             setLoading(false);

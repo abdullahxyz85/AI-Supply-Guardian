@@ -1,8 +1,66 @@
 // src/lib/userSync.ts
 import { AuthContextType } from '../contexts/AuthContext';
+import { supabase } from './supabase';
 
 const n8nWebhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
 const n8nApiKey = import.meta.env.VITE_N8N_WEBHOOK_HEADER_KEY;
+
+/**
+ * Creates or signs in a Google user to Supabase auth.users table
+ * This ensures Google OAuth users are properly stored in Supabase
+ * @param googleUser - The Google user data from OAuth
+ * @returns The Supabase session or null if failed
+ */
+export async function createSupabaseUserFromGoogle(
+  googleUser: { user_id: string; email: string; name: string; picture?: string }
+) {
+  try {
+    console.log('🔄 Creating/signing in Google user to Supabase:', googleUser.email);
+
+    // Generate a secure random password (user won't need it for Google OAuth)
+    const randomPassword = crypto.randomUUID() + crypto.randomUUID();
+    
+    // Try to sign up the user
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: googleUser.email,
+      password: randomPassword,
+      options: {
+        emailRedirectTo: undefined, // Disable email confirmation for Google OAuth users
+        data: {
+          full_name: googleUser.name,
+          avatar_url: googleUser.picture,
+          provider: 'google',
+          google_id: googleUser.user_id,
+        },
+      },
+    });
+
+    if (signUpError) {
+      // If user already exists, that's actually fine for our use case
+      if (signUpError.message.includes('already registered') || 
+          signUpError.message.includes('User already registered')) {
+        console.log('ℹ️ User already exists in Supabase:', googleUser.email);
+        
+        // User exists, which means they were created successfully before
+        // We don't need to do anything else
+        return { user: null, session: null };
+      }
+      
+      console.error('❌ Error signing up user:', signUpError);
+      return null;
+    }
+
+    if (signUpData.user) {
+      console.log('✅ User created in Supabase auth.users:', signUpData.user.id);
+      console.log('📧 Email:', signUpData.user.email);
+    }
+    
+    return signUpData;
+  } catch (error) {
+    console.error('❌ Unexpected error creating Supabase user:', error);
+    return null;
+  }
+}
 
 /**
  * Sends user data to the n8n webhook to sync with Supabase.
