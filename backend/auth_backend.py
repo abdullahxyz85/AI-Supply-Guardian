@@ -16,6 +16,8 @@ import base64
 import hashlib
 import httpx
 import secrets
+import json
+
 import urllib.parse
 try:
     from supabase import create_client, Client
@@ -76,7 +78,7 @@ app = FastAPI(title="Google OAuth2 Authentication API", version="1.0.0")
 # CORS configuration
 origins = [
     "http://localhost:3035",
-    "http://localhost:8055",
+    "http://localhost:8060",
     "http://localhost:5173",
     "http://ai-supply-guardian.zentraid.com",
     "https://ai-supply-guardian.zentraid.com",
@@ -114,7 +116,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
-# GOOGLE_REDIRECT_URI = "https://ai-supply-guardian.zentraid.com:8055/api/auth/google/callback"
+# GOOGLE_REDIRECT_URI = "http://localhost:8060/api/auth/google/callback"
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://ai-supply-guardian.zentraid.com")
 
 # Validate required environment variables
@@ -126,8 +128,8 @@ GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
-# Store for OAuth2 state (in production, use Redis)
-oauth_states: Dict[str, Dict[str, Any]] = {}
+# Store for OAuth2 state (Stateless implementation used now)
+# oauth_states: Dict[str, Dict[str, Any]] = {}
 
 # ============================================================================
 # Pydantic Models
@@ -296,16 +298,17 @@ async def google_login(prompt: Optional[str] = "consent"):
     
     Always requests consent to ensure we get refresh tokens
     """
-    state = generate_state()
-    
-    # Store state with timestamp for validation
-    oauth_states[state] = {
+    # Build authorization URL
+    # Create stateless state parameter
+    state_data = {
+        "nonce": secrets.token_urlsafe(16),
         "created_at": datetime.utcnow().isoformat(),
         "type": "login",
         "prompt": prompt
     }
+    state_json = json.dumps(state_data)
+    state = cipher_suite.encrypt(state_json.encode()).decode()
     
-    # Build authorization URL
     params = {
         "client_id": GOOGLE_CLIENT_ID,
         "redirect_uri": GOOGLE_REDIRECT_URI,
@@ -338,14 +341,24 @@ async def google_callback(code: str, state: str):
     Exchange authorization code for tokens and create user session
     """
     # Validate state
-    if state not in oauth_states:
+    try:
+        # Decrypt state
+        state_json = cipher_suite.decrypt(state.encode()).decode()
+        state_data = json.loads(state_json)
+        
+        # Check expiration (15 minutes)
+        created_at = datetime.fromisoformat(state_data["created_at"])
+        if datetime.utcnow() - created_at > timedelta(minutes=15):
+            return RedirectResponse(
+                url=f"{FRONTEND_URL}?error=state_expired",
+                status_code=302
+            )
+            
+    except Exception:
         return RedirectResponse(
             url=f"{FRONTEND_URL}?error=invalid_state",
             status_code=302
         )
-    
-    # Remove state after validation
-    oauth_states.pop(state)
     
     try:
         # Exchange authorization code for tokens
@@ -591,5 +604,5 @@ async def validate_session(user_id: str):
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", "8055"))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    port = int(os.getenv("PORT", "8060"))
+    uvicorn.run(app, host="127.0.0.1", port=port)
