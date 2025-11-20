@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     };
-    
+
     handleGoogleCallback();
 
     // 2. Set up a single listener for all authentication events.
@@ -84,13 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Case 1: A Supabase session is active (user logged in via email/pass, or just signed up)
         if (session) {
           syncTriggered.current = true; // Close the gate immediately.
-          
+
           setSession(session);
           setUser(session.user);
           setAccessToken(session.access_token);
           setRefreshToken(session.refresh_token);
           setAuthProvider("supabase");
-          
+
           await syncUserToSupabase(session.user, session.access_token, session.refresh_token);
           setLoading(false);
           return;
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Case 2: No Supabase session, check for a Google OAuth session in local storage
         const storedUserId = localStorage.getItem('user_id');
         const pendingGoogleAuth = localStorage.getItem('pending_google_auth');
-        
+
         // Check for Google OAuth user (either pending auth or returning user on refresh)
         if (storedUserId) {
           const initialized = await authTokenManager.initialize(storedUserId);
@@ -110,31 +110,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const googleAccessToken = authTokenManager.getAccessToken();
             const googleRefreshToken = authTokenManager.getRefreshToken();
 
-            // Create or update user in Supabase auth.users table (only on first login)
-            if (googleUser && pendingGoogleAuth === 'true') {
-
-              await createSupabaseUserFromGoogle({
-                user_id: googleUser.user_id,
-                email: googleUser.email,
-                name: googleUser.name,
-                picture: googleUser.picture,
-              });
-              
-              // If user was created successfully, the Supabase UUID is now stored
-              // If user already existed, we fetched and stored their UUID
-
-              
-              // Clear the pending flag after first successful setup
-              localStorage.removeItem('pending_google_auth');
-            }
-
             setUser(googleUser);
             setAccessToken(googleAccessToken);
             setRefreshToken(googleRefreshToken);
             setAuthProvider('google');
-            
-            await syncUserToSupabase(googleUser, googleAccessToken, googleRefreshToken);
+
+            // Unblock UI immediately so user doesn't see loading screen
             setLoading(false);
+
+            // Run sync operations in background
+            // We don't await these to prevent blocking the UI
+            const performSync = async () => {
+              // Create or update user in Supabase auth.users table (only on first login)
+              if (googleUser && pendingGoogleAuth === 'true') {
+                await createSupabaseUserFromGoogle({
+                  user_id: googleUser.user_id,
+                  email: googleUser.email,
+                  name: googleUser.name,
+                  picture: googleUser.picture,
+                });
+
+                // Clear the pending flag after first successful setup
+                localStorage.removeItem('pending_google_auth');
+              }
+
+              await syncUserToSupabase(googleUser, googleAccessToken, googleRefreshToken);
+            };
+
+            performSync().catch(err => console.error("Background sync error:", err));
             return;
           }
         }
@@ -190,7 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     const provider = authProvider;
     setLoading(true);
-    
+
     if (provider === 'supabase') {
       await supabase.auth.signOut();
     } else if (provider === 'google') {
